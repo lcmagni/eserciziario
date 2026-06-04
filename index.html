@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Il Linguaggio che Incanta — Eserciziario Interattivo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --deep:    #1B3A5C;
+  --mid:     #2E6B9E;
+  --ink:     #1C1C2E;
+  --gold:    #B07D2A;
+  --lgold:   #FDF6E3;
+  --gold2:   #C9943A;
+  --rule:    #8AB4CF;
+  --light:   #D8EAF5;
+  --xlight:  #EEF6FB;
+  --lgrey:   #F5F5F7;
+  --grey:    #6B7280;
+  --green:   #2E7D52;
+  --lgreen:  #EDF7F1;
+  --rust:    #8B3A3A;
+  --lrust:   #FDF0EE;
+  --purple:  #5B2D8E;
+  --lpurple: #F3EEF9;
+  --teal:    #1A6B6B;
+  --lteal:   #EAF5F5;
+  --navy:    #E8EDF5;
+  --bg:      #FAFBFC;
+  --white:   #FFFFFF;
+  --shadow:  0 4px 24px rgba(27,58,92,0.10);
+  --shadow-sm: 0 2px 8px rgba(27,58,92,0.07);
+  --radius:  12px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;font-size:15px;line-height:1.7}
+
+/* SIDEBAR */
+#sidebar{position:fixed;left:0;top:0;bottom:0;width:280px;background:var(--deep);color:white;display:flex;flex-direction:column;overflow-y:auto;z-index:100;transition:transform .3s ease}
+#sidebar-header{padding:28px 24px 20px;border-bottom:1px solid rgba(255,255,255,.12)}
+#sidebar-header h1{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:600;line-height:1.3;color:#C9943A;letter-spacing:.01em}
+#sidebar-header p{font-size:.7rem;color:rgba(255,255,255,.5);margin-top:4px;font-family:'DM Mono',monospace;letter-spacing:.05em;text-transform:uppercase}
+#sidebar nav{flex:1;padding:12px 0 24px}
+.nav-section-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.35);padding:16px 24px 6px;font-family:'DM Mono',monospace}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 24px;cursor:pointer;border-left:3px solid transparent;transition:all .18s;text-decoration:none;color:rgba(255,255,255,.72);font-size:.82rem;line-height:1.4}
+.nav-item:hover{background:rgba(255,255,255,.06);color:white;border-left-color:var(--gold2)}
+.nav-item.active{background:rgba(255,255,255,.10);color:white;border-left-color:var(--gold2)}
+.nav-num{font-family:'DM Mono',monospace;font-size:.63rem;color:var(--gold2);min-width:28px;opacity:.85}
+.nav-badge{margin-left:auto;font-size:.6rem;background:rgba(255,255,255,.12);border-radius:20px;padding:1px 7px;color:rgba(255,255,255,.5);font-family:'DM Mono',monospace}
+.nav-badge.done{background:rgba(46,125,82,.4);color:#7DCCAA}
+
+/* MAIN */
+#main{margin-left:280px;min-height:100vh}
+
+/* TOPBAR */
+#topbar{position:sticky;top:0;background:rgba(250,251,252,.93);backdrop-filter:blur(12px);border-bottom:1px solid rgba(27,58,92,.08);padding:12px 40px;display:flex;align-items:center;justify-content:space-between;z-index:50}
+.topbar-title{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:600;color:var(--deep)}
+.topbar-progress{display:flex;align-items:center;gap:12px;font-size:.75rem;color:var(--grey);font-family:'DM Mono',monospace}
+.progress-bar{width:120px;height:4px;background:var(--light);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:2px;transition:width .5s ease}
+#menu-toggle{display:none;background:none;border:none;cursor:pointer;color:var(--deep);font-size:1.4rem}
+
+/* PAGES */
+.page{display:none;padding:48px 40px 80px;max-width:860px}
+.page.active{display:block;animation:pageIn .3s ease}
+@keyframes pageIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+#page-home{max-width:100%;padding:0}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,var(--deep) 0%,#0D2444 60%,#1a1a35 100%);padding:80px 40px 64px;color:white;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-40%;right:-20%;width:600px;height:600px;background:radial-gradient(circle,rgba(176,125,42,.18) 0%,transparent 70%);pointer-events:none}
+.hero-eyebrow{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold2);margin-bottom:20px}
+.hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2.4rem,5vw,3.8rem);font-weight:300;line-height:1.1;margin-bottom:10px;letter-spacing:-.01em}
+.hero h1 em{font-style:italic;color:#C9943A}
+.hero-subtitle{font-size:1rem;color:rgba(255,255,255,.65);max-width:540px;margin-bottom:40px;font-weight:300}
+.hero-stats{display:flex;gap:32px;flex-wrap:wrap}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:600;color:var(--gold2);line-height:1}
+.stat-label{font-size:.7rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.08em;font-family:'DM Mono',monospace}
+.hero-cards{padding:40px 40px 48px;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;background:white;border-bottom:1px solid rgba(27,58,92,.06)}
+.module-card{padding:20px;border-radius:var(--radius);border:1px solid rgba(27,58,92,.08);cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.module-card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.module-card-num{font-family:'DM Mono',monospace;font-size:.63rem;color:var(--grey);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
+.module-card h3{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:600;color:var(--deep);margin-bottom:4px;line-height:1.25}
+.module-card p{font-size:.77rem;color:var(--grey);line-height:1.4}
+.mci{position:absolute;top:0;left:0;width:4px;height:100%;border-radius:var(--radius) 0 0 var(--radius)}
+.mc-0 .mci{background:var(--teal)}.mc-1 .mci{background:var(--rust)}.mc-2 .mci{background:var(--mid)}
+.mc-3 .mci{background:var(--gold)}.mc-4 .mci{background:var(--purple)}.mc-5 .mci{background:var(--green)}
+.mc-6 .mci{background:var(--deep)}.mc-7 .mci{background:#C47A2B}
+
+/* MODULE HEADER */
+.module-header{margin-bottom:32px;padding-bottom:24px;border-bottom:2px solid var(--gold)}
+.module-eyebrow{font-family:'DM Mono',monospace;font-size:.63rem;letter-spacing:.15em;text-transform:uppercase;color:var(--rule);margin-bottom:8px}
+.module-header h2{font-family:'Cormorant Garamond',serif;font-size:2.4rem;font-weight:300;color:var(--deep);line-height:1.15;margin-bottom:8px}
+.module-header p{font-size:.95rem;color:var(--grey);font-style:italic;font-family:'Cormorant Garamond',serif}
+
+/* STEP LABEL */
+.step-label{display:flex;align-items:center;gap:12px;margin:28px 0 14px;padding-left:14px;border-left:3px solid var(--gold)}
+.step-num{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--rule)}
+.step-title{font-size:.92rem;font-weight:600;color:var(--deep)}
+
+/* BOXES */
+.box{border-radius:var(--radius);padding:20px 22px;margin:14px 0;font-size:.88rem;line-height:1.65}
+.box-label{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;font-weight:500}
+.box-theory{background:var(--xlight);border-left:5px solid var(--mid)}.box-theory .box-label{color:var(--mid)}
+.box-perception{background:var(--lrust);border-left:5px solid var(--rust)}.box-perception .box-label{color:var(--rust)}
+.box-dissonance{background:var(--lpurple);border-left:5px solid var(--purple)}.box-dissonance .box-label{color:var(--purple)}
+.box-umbra{background:var(--navy);border-left:5px solid var(--deep)}.box-umbra .box-label{color:var(--deep)}
+.box-body{background:#FEF8EE;border-left:5px solid #C47A2B}.box-body .box-label{color:#C47A2B}
+.box-drill{background:#F0FAF5;border-left:5px solid #1E6B45}.box-drill .box-label{color:#1E6B45}
+.quote-text{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-style:italic;color:var(--grey);border-left:3px solid var(--gold);padding:8px 18px;margin:10px 0;line-height:1.55}
+
+/* EXERCISE */
+.exercise{background:var(--lgold);border:1px solid rgba(176,125,42,.25);border-left:5px solid var(--gold);border-radius:var(--radius);padding:24px 26px;margin:20px 0}
+.exercise-id{font-family:'DM Mono',monospace;font-size:.72rem;font-weight:500;color:var(--gold);letter-spacing:.06em}
+.exercise-title{font-size:.88rem;color:var(--grey);font-style:italic;font-family:'Cormorant Garamond',serif;margin-top:2px;margin-bottom:12px}
+.exercise-body{font-size:.875rem;color:var(--ink);margin-bottom:16px;line-height:1.6}
+
+/* RESPONSE */
+.response-label{font-family:'DM Mono',monospace;font-size:.63rem;letter-spacing:.1em;text-transform:uppercase;color:var(--grey);margin-bottom:6px}
+.response-textarea{width:100%;min-height:140px;border:1.5px solid rgba(176,125,42,.3);border-radius:8px;padding:14px 16px;font-family:'DM Sans',sans-serif;font-size:.875rem;line-height:1.65;color:var(--ink);background:white;resize:vertical;transition:border-color .2s,box-shadow .2s;outline:none}
+.response-textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(176,125,42,.12)}
+.response-textarea.correct{border-color:var(--green);background:#F8FFF9}
+.response-textarea.reviewed{border-color:var(--mid);background:#F8FBFF}
+.char-count{font-family:'DM Mono',monospace;font-size:.63rem;color:var(--grey);text-align:right;margin-top:4px}
+
+/* SOLUTION */
+.solution-box{display:none;background:var(--lgreen);border:1px solid rgba(46,125,82,.25);border-left:5px solid var(--green);border-radius:var(--radius);padding:20px 22px;margin:12px 0;font-size:.875rem;line-height:1.65}
+.solution-box.visible{display:block;animation:fadeSlide .35s ease}
+.solution-header{font-family:'DM Mono',monospace;font-size:.63rem;letter-spacing:.1em;text-transform:uppercase;color:var(--green);margin-bottom:10px;font-weight:500}
+.solution-text p{margin-bottom:8px}.solution-text p:last-child{margin-bottom:0}
+.solution-text strong{color:var(--green)}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+
+/* BUTTONS */
+.exercise-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;padding-top:16px;border-top:1px solid rgba(176,125,42,.15)}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:8px 18px;border-radius:7px;font-size:.8rem;font-weight:500;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .18s;text-decoration:none}
+.btn-check{background:var(--deep);color:white}.btn-check:hover{background:#0D2444;transform:translateY(-1px)}
+.btn-solution{background:white;color:var(--green);border:1.5px solid rgba(46,125,82,.35)}.btn-solution:hover{background:var(--lgreen);transform:translateY(-1px)}
+.btn-download{background:white;color:var(--mid);border:1.5px solid rgba(46,107,158,.3)}.btn-download:hover{background:var(--xlight);transform:translateY(-1px)}
+.btn-clear{background:white;color:var(--grey);border:1.5px solid rgba(107,114,128,.25);margin-left:auto}.btn-clear:hover{background:var(--lgrey)}
+.btn svg{width:14px;height:14px;flex-shrink:0}
+
+/* FEEDBACK */
+.feedback-badge{display:none;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:.73rem;font-weight:500;font-family:'DM Mono',monospace;letter-spacing:.03em}
+.feedback-badge.visible{display:inline-flex;animation:fadeSlide .25s ease}
+.feedback-badge.good{background:rgba(46,125,82,.12);color:var(--green)}
+.feedback-badge.partial{background:rgba(176,125,42,.12);color:var(--gold)}
+.feedback-badge.empty{background:rgba(139,58,58,.10);color:var(--rust)}
+
+/* TRACKING */
+.tracking-sheet{background:var(--lteal);border:1px solid rgba(26,107,107,.2);border-left:5px solid var(--teal);border-radius:var(--radius);padding:24px 26px;margin:32px 0 16px}
+.tracking-sheet h4{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:600;color:var(--teal);margin-bottom:6px}
+.tracking-sheet p{font-size:.82rem;color:var(--grey);margin-bottom:16px;font-style:italic}
+.tracking-questions{display:flex;flex-direction:column;gap:12px}
+.tracking-q label{display:block;font-size:.8rem;color:var(--teal);font-weight:500;margin-bottom:5px}
+.tracking-q textarea{width:100%;min-height:70px;border:1.5px solid rgba(26,107,107,.25);border-radius:7px;padding:10px 13px;font-family:'DM Sans',sans-serif;font-size:.84rem;resize:vertical;background:white;color:var(--ink);outline:none;transition:border-color .2s}
+.tracking-q textarea:focus{border-color:var(--teal);box-shadow:0 0 0 2px rgba(26,107,107,.1)}
+
+/* TABLE */
+.data-table{width:100%;border-collapse:collapse;font-size:.84rem;margin:12px 0;border-radius:8px;overflow:hidden;box-shadow:var(--shadow-sm)}
+.data-table th{background:var(--deep);color:white;padding:10px 14px;text-align:left;font-weight:500;font-size:.78rem}
+.data-table th:last-child{background:var(--mid)}
+.data-table td{padding:9px 14px;border-bottom:1px solid rgba(27,58,92,.07);vertical-align:top;line-height:1.5;color:var(--ink)}
+.data-table tr:nth-child(even) td{background:var(--xlight)}
+.data-table tr:last-child td{border-bottom:none}
+
+/* SECTION DIVIDER */
+.section-divider{display:flex;align-items:center;gap:16px;margin:36px 0 20px}
+.section-divider h3{font-family:'Cormorant Garamond',serif;font-size:1.45rem;font-weight:600;color:var(--mid);white-space:nowrap}
+.section-divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(46,107,158,.3),transparent)}
+
+p.body-text{font-size:.9rem;line-height:1.7;color:var(--ink);margin:12px 0}
+
+/* SOURCES */
+.sources{margin-top:40px;padding-top:20px;border-top:1px solid rgba(27,58,92,.08);font-size:.78rem;color:var(--grey)}
+.sources strong{font-family:'DM Mono',monospace;font-size:.63rem;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:8px;color:var(--rule)}
+.sources ul{list-style:none}.sources li{padding:2px 0;font-style:italic}.sources li::before{content:'—  ';color:var(--gold)}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  #sidebar{transform:translateX(-100%)}.#sidebar.open{transform:translateX(0)}
+  #main{margin-left:0}#menu-toggle{display:block}
+  .page{padding:32px 20px 60px}.hero{padding:48px 20px 40px}.hero-cards{padding:28px 20px}
+  #topbar{padding:10px 20px}
+}
+#sidebar.open{transform:translateX(0)}
+#overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:90}
+#overlay.visible{display:block}
+#sidebar::-webkit-scrollbar{width:4px}
+#sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:2px}
+</style>
+</head>
+<body>
+
+<div id="overlay" onclick="chiudiSidebar()"></div>
+
+<aside id="sidebar">
+  <div id="sidebar-header">
+    <h1>Il Linguaggio che Incanta</h1>
+    <p>Eserciziario Interattivo</p>
+  </div>
+  <nav>
+    <div class="nav-section-label">Inizio</div>
+    <a class="nav-item active" onclick="mostraPagina('home')"><span class="nav-num">◈</span> Panoramica</a>
+    <div class="nav-section-label">Moduli</div>
+    <a class="nav-item" onclick="mostraPagina('mod0')"><span class="nav-num">0</span> Allenare la Percezione</a>
+    <a class="nav-item" onclick="mostraPagina('mod1')"><span class="nav-num">1</span> Discontinuità Semiotiche</a>
+    <a class="nav-item" onclick="mostraPagina('mod2')"><span class="nav-num">2</span> Discontinuità Lessicali</a>
+    <a class="nav-item" onclick="mostraPagina('mod3')"><span class="nav-num">3</span> Esorcismi Linguistici</a>
+    <a class="nav-item" onclick="mostraPagina('mod4')"><span class="nav-num">4</span> Grammatica e Sintassi</a>
+    <a class="nav-item" onclick="mostraPagina('mod5')"><span class="nav-num">5</span> Discontinuità Pragmatiche</a>
+    <a class="nav-item" onclick="mostraPagina('mod6')"><span class="nav-num">6</span> Semantica Complementare</a>
+    <a class="nav-item" onclick="mostraPagina('mod7')"><span class="nav-num">7</span> Leadership Generativa</a>
+    <div class="nav-section-label">Riferimento</div>
+    <a class="nav-item" onclick="mostraPagina('glossario')"><span class="nav-num">G</span> Glossario</a>
+  </nav>
+</aside>
+
+<div id="main">
+  <div id="topbar">
+    <button id="menu-toggle" onclick="toggleSidebar()">☰</button>
+    <span class="topbar-title" id="topbar-title">Il Linguaggio che Incanta</span>
+    <div class="topbar-progress">
+      <span id="progress-text">0 / 0 esercizi</span>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <div id="page-home" class="page active">
+    <div class="hero">
+      <div class="hero-eyebrow">Learnable Theory · Luiss Business School · Giugno 2026</div>
+      <h1>Il Linguaggio<br><em>che Incanta</em></h1>
+      <p class="hero-subtitle">Un sistema trasformativo di formazione per leader del significato — edizione interattiva</p>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:.95rem;color:rgba(255,255,255,.55);margin-top:-24px;margin-bottom:32px;font-style:italic">di Luca Magni &nbsp;·&nbsp; con Giorgio Marchetti e Ahlam Alharbi</p>
+      <div class="hero-stats">
+        <div class="stat"><div class="stat-num">8</div><div class="stat-label">Moduli</div></div>
+        <div class="stat"><div class="stat-num">30+</div><div class="stat-label">Esercizi</div></div>
+        <div class="stat"><div class="stat-num">9</div><div class="stat-label">Passi per modulo</div></div>
+      </div>
+    </div>
+    <div class="hero-cards">
+      <div class="module-card mc-0" onclick="mostraPagina('mod0')"><div class="mci"></div><div class="module-card-num">Modulo 0</div><h3>Allenare la Percezione</h3><p>Prima di analizzare, impara a notare</p></div>
+      <div class="module-card mc-1" onclick="mostraPagina('mod1')"><div class="mci"></div><div class="module-card-num">Modulo 1</div><h3>Discontinuità Semiotiche</h3><p>Neologismi, suoni, silenzi</p></div>
+      <div class="module-card mc-2" onclick="mostraPagina('mod2')"><div class="mci"></div><div class="module-card-num">Modulo 2</div><h3>Discontinuità Lessicali</h3><p>Affordance, nominalizzazione, parole-ombrello</p></div>
+      <div class="module-card mc-3" onclick="mostraPagina('mod3')"><div class="mci"></div><div class="module-card-num">Modulo 3</div><h3>Esorcismi Linguistici</h3><p>Grammatica della contraddizione produttiva</p></div>
+      <div class="module-card mc-4" onclick="mostraPagina('mod4')"><div class="mci"></div><div class="module-card-num">Modulo 4</div><h3>Grammatica e Sintassi</h3><p>Passivo, modo verbale, ordine delle parole</p></div>
+      <div class="module-card mc-5" onclick="mostraPagina('mod5')"><div class="mci"></div><div class="module-card-num">Modulo 5</div><h3>Discontinuità Pragmatiche</h3><p>Illocuzione, ironia, implicature</p></div>
+      <div class="module-card mc-6" onclick="mostraPagina('mod6')"><div class="mci"></div><div class="module-card-num">Modulo 6</div><h3>Semantica Complementare</h3><p>Il protocollo completo a 9 passi</p></div>
+      <div class="module-card mc-7" onclick="mostraPagina('mod7')"><div class="mci"></div><div class="module-card-num">Modulo 7</div><h3>Leadership Generativa</h3><p>Dall'analista all'architetto del significato</p></div>
+    </div>
+    <div style="padding:40px 40px 0;max-width:860px">
+      <div class="box box-theory">
+        <div class="box-label">📘 Principio fondante</div>
+        <strong>Il significato non comincia dai concetti.</strong> Comincia dalla discontinuità empirica percepibile. Pertanto: la percezione deve precedere la spiegazione — la dissonanza deve precedere la stabilità — l'esperienza deve precedere la teoria. Ogni modulo di questo eserciziario segue questa sequenza.
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULO 0 -->
+  <div id="page-mod0" class="page">
+    <div class="module-header">
+      <div class="module-eyebrow">Modulo 0</div>
+      <h2>Allenare la Percezione</h2>
+      <p>Prima di analizzare, devi imparare a notare</p>
+    </div>
+    <p class="body-text">Prima di poter analizzare una costruzione linguistica, devi essere in grado di notarla. La maggior parte delle parole che plasmano il tuo pensiero ti è invisibile — non perché siano nascoste, ma perché sono troppo familiari. In questo modulo non c'è teoria. Ci sono solo esercizi di osservazione.</p>
+
+    <div class="section-divider"><h3>0.1 — Rallentare il significato</h3></div>
+    <div class="step-label"><span class="step-num">Passo 1</span><span class="step-title">Attivazione percettiva</span></div>
+    <div class="box box-perception">
+      <div class="box-label">🔴 Percezione — fermati prima di continuare</div>
+      Leggi la seguente frase. Non analizzarla. Osserva solo cosa accade.
+      <div class="quote-text">«Abbiamo bisogno di valorizzare il nostro capitale umano per guidare una crescita sostenibile.»</div>
+      Restaci 30 secondi prima di continuare.
+    </div>
+    <div class="step-label"><span class="step-num">Passo 2</span><span class="step-title">Disorientamento controllato</span></div>
+    <div class="box box-dissonance">
+      <div class="box-label">🟣 Disorientamento — resta nella stranezza</div>
+      Rileggila. Permettiti di trovarla strana. Nota quali parole sembrano fluide e quali producono una leggera dissonanza. Non risolvere ancora il disagio.
+    </div>
+    <div class="step-label"><span class="step-num">Passo 3</span><span class="step-title">Stabilizzazione concettuale</span></div>
+    <div class="box box-theory">
+      <div class="box-label">📘 Teoria</div>
+      Ciò che hai appena vissuto è il punto di ingresso dell'analisi di Linguistica del Learnable. Hai notato la discontinuità prima di nominarla. Le parole che sembravano leggermente fuori posto — «valorizzare», «capitale umano», «guidare», «sostenibile» — portano ciascuna un dominio semantico che non corrisponde a quello delle parole che le circondano. <strong>Questo è l'ordine corretto.</strong>
+    </div>
+
+    <div class="exercise" id="ex-0-1-A">
+      <div class="exercise-id">Esercizio 0.1.A</div>
+      <div class="exercise-title">Il drill da 30 secondi</div>
+      <div class="exercise-body">
+        Per ciascuna frase, trascorri esattamente 30 secondi ad osservare. Non analizzare. Poi scrivi una parola che descriva la <em>qualità</em> dell'attrito percepito — non la sua causa.
+        <div class="quote-text">1. «Siamo impegnati a potenziare il nostro talent pool per produrre outcome trasformativi.»</div>
+        <div class="quote-text">2. «Il ministero attiverà un pacchetto di riforme strutturali per migliorare la competitività.»</div>
+        <div class="quote-text">3. «Il nostro assistente IA è progettato per comprendere le tue esigenze e anticipare le tue preferenze.»</div>
+        <div class="quote-text">4. «Il lavoro agile ha creato nuove sfide ma anche entusiasmanti opportunità per i team flessibili.»</div>
+      </div>
+      <div class="response-label">Le tue parole descrittive dell'attrito — una per frase + breve spiegazione:</div>
+      <textarea class="response-textarea" id="resp-0-1-A" placeholder="Frase 1: ___  perché...&#10;Frase 2: ___  perché...&#10;Frase 3: ___  perché...&#10;Frase 4: ___  perché..." oninput="aggiornaContatore('0-1-A')"></textarea>
+      <div class="char-count" id="cc-0-1-A">0 caratteri</div>
+      <div class="solution-box" id="sol-0-1-A">
+        <div class="solution-header">✓ Risposta modello — Esercizio 0.1.A</div>
+        <div class="solution-text">
+          <p><strong>Frase 1: «talent pool»</strong> — <em>Meccanica.</em> «Potenziare» suggerisce crescita; «talent pool» tratta le persone come un serbatoio con un volume misurabile. La contraddizione è tra il verbo (liberazione) e il sostantivo (contenimento).</p>
+          <p><strong>Frase 2: «riforme strutturali»</strong> — <em>Metallica.</em> Sia «strutturale» che «competitività» sono importazioni dal dominio ingegneristico ed economico applicate alla politica sociale. Nessun agente umano appare in tutta la frase.</p>
+          <p><strong>Frase 3: «comprendere le tue esigenze»</strong> — <em>Inquietante.</em> «Comprendere» implica coscienza. Applicato a un assistente IA, installa il Learnable che la macchina abbia proprietà cognitive che non possiede.</p>
+          <p><strong>Frase 4: «team agili»</strong> — <em>Scivolosa.</em> «Agile» è migrato dalla metodologia di sviluppo software a termine generico di elogio manageriale, perdendo il suo significato tecnico e acquisendo una valenza positiva vuota.</p>
+          <p><strong>Principio chiave:</strong> l'attrito percepito <em>prima di nominarlo</em> è il segnale semiotico. L'analisi inizia lì.</p>
+        </div>
+      </div>
+      <div class="exercise-actions">
+        <button class="btn btn-check" onclick="verificaEsercizio('0-1-A')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8l4 4 8-8"/></svg>Verifica risposta</button>
+        <button class="btn btn-solution" onclick="mostraSoluzione('0-1-A')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M8 5v4M8 11v1"/></svg>Vedi risposta modello</button>
+        <button class="btn btn-download" onclick="scaricaEsercizio('0-1-A','Esercizio 0.1.A — Drill di Percezione')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v8M5 7l3 3 3-3M3 12h10"/></svg>Scarica</button>
+        <span class="feedback-badge" id="fb-0-1-A"></span>
+        <button class="btn btn-clear" onclick="pulisciEsercizio('0-1-A')">Cancella</button>
+      </div>
+    </div>
+
+    <div class="section-divider"><h3>0.2 — Rilevare la discontinuità</h3></div>
+    <div class="box box-perception">
+      <div class="box-label">🔴 Percezione</div>
+      Osserva queste quattro frasi come immagini, non come enunciati. Non analizzare la grammatica. Nota forma e peso.
+      <div class="quote-text">Distanziamento sociale. &nbsp; Droghe ricreative. &nbsp; Volontariato obbligatorio. &nbsp; Crescita negativa.</div>
+      Qualcosa resiste in ciascuna di esse. Resta in quella resistenza.
+    </div>
+    <div class="box box-body">
+      <div class="box-label">🧠 Prompt corporeo</div>
+      Prima di nominare la contraddizione logica in una di queste frasi, nota dove si produce la tensione nel tuo corpo. È nel petto? Nella gola? Nella fronte? Una leggerissima sospensione del respiro?
+    </div>
+
+    <div class="exercise" id="ex-0-2-A">
+      <div class="exercise-id">Esercizio 0.2.A</div>
+      <div class="exercise-title">Il tuo inventario personale di dissonanze</div>
+      <div class="exercise-body">
+        Nelle prossime 24 ore, raccogli <strong>cinque frasi</strong> — da giornali, email, riunioni, social media — che producano in te qualsiasi qualità di attrito. Scrivile qui. Non analizzare ancora. Torna dopo aver completato il Modulo 1 e annota cosa noti ora che non notavi prima.
+      </div>
+      <div class="response-label">Il mio inventario di dissonanze — 5 frasi che mi hanno disturbato:</div>
+      <textarea class="response-textarea" id="resp-0-2-A" placeholder="1. &#10;2. &#10;3. &#10;4. &#10;5. " style="min-height:160px" oninput="aggiornaContatore('0-2-A')"></textarea>
+      <div class="char-count" id="cc-0-2-A">0 caratteri</div>
+      <div class="solution-box" id="sol-0-2-A">
+        <div class="solution-header">✓ Risposta modello — Esercizio 0.2.A</div>
+        <div class="solution-text">
+          <p>Questo esercizio non ha una risposta unica — l'inventario è personale. Tuttavia, esempi produttivi da contesti reali includono:</p>
+          <p><strong>1.</strong> «Risorse umane» — collisione dominio risorsa/persona.<br><strong>2.</strong> «Lavoro smart» — smart (cognitivo/valoriale) + lavoro (meccanico/funzionale).<br><strong>3.</strong> «Formazione obbligatoria» — coercizione + intento di sviluppo.<br><strong>4.</strong> «Sviluppo sostenibile» — crescita + limite ecologico.<br><strong>5.</strong> «Intelligenza artificiale» — prodotto + cognizione.</p>
+          <p>Dopo aver completato il Modulo 1, dovresti essere in grado di nominare la specifica collisione di affordance in ciascuna frase raccolta. Il cambiamento chiave: non senti più solo l'attrito — sai <em>spiegarne la struttura</em>.</p>
+        </div>
+      </div>
+      <div class="exercise-actions">
+        <button class="btn btn-check" onclick="verificaEsercizio('0-2-A')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8l4 4 8-8"/></svg>Verifica risposta</button>
+        <button class="btn btn-solution" onclick="mostraSoluzione('0-2-A')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M8 5v4M8 11v1"/></svg>Vedi risposta modello</button>
+        <button class="btn btn-download" onclick="scaricaEsercizio('0-2-A','Esercizio 0.2.A — Inventario Dissonanze')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v8M5 7l3 3 3-3M3 12h10"/></svg>Scarica</button>
+        <span class="feedback-badge" id="fb-0-2-A"></span>
+        <button class="btn btn-clear" onclick="pulisciEsercizio('0-2-A')">Cancella</button>
+      </div>
+    </div>
+
+    <div class="section-divider"><h3>0.3 — Il corpo sa prima</h3></div>
+    <div class="box box-perception">
+      <div class="box-label">🔴 Percezione</div>
+      Un manager entra in riunione e dice: <em>«Non sono qui per dirti come fare il tuo lavoro, ma —»</em><br><br>Fermati. Prima di continuare a leggere. Cosa è accaduto nel tuo corpo?
+    </div>
+
+    <div class="exercise" id="ex-0-3-A">
+      <div class="exercise-id">Esercizio 0.3.A</div>
+      <div class="exercise-title">Percezione incarnata — veloce e lenta</div>
+      <div class="exercise-body">
+        Per ciascun enunciato: <strong>VELOCE (15 secondi)</strong> — reazione fisica immediata. <strong>LENTO (5 minuti)</strong> — meccanismo linguistico che ora identifichi.
+        <div class="quote-text">A: «Qui siamo una famiglia.» (CEO a un team in procinto di ristrutturazione)</div>
+        <div class="quote-text">B: «La situazione è sotto controllo.» (comunicato istituzionale durante una crisi)</div>
+        <div class="quote-text">C: «Troverà il modo.» (email di un cliente a un team già sovraccarico)</div>
+      </div>
+      <div class="response-label">VELOCE (reazione fisica, 15 sec ciascuna) + LENTO (meccanismo, 5 min ciascuno):</div>
+      <textarea class="response-textarea" id="resp-0-3-A" placeholder="A — VELOCE: &#10;A — LENTO: &#10;&#10;B — VELOCE: &#10;B — LENTO: &#10;&#10;C — VELOCE: &#10;C — LENTO: " style="min-height:220px" oninput="aggiornaContatore('0-3-A')"></textarea>
+      <div class="char-count" id="cc-0-3-A">0 caratteri</div>
+      <div class="solution-box" id="sol-0-3-A">
+        <div class="solution-header">✓ Risposta modello — Esercizio 0.3.A</div>
+        <div class="solution-text">
+          <p><strong>A — «Qui siamo una famiglia.»</strong><br>VELOCE: Un leggero calore seguito quasi immediatamente da una tensione — ti viene chiesto qualcosa prima che tu abbia acconsentito.<br>LENTO: «Famiglia aziendale» è un esorcismo linguistico. «Famiglia» importa affordance di lealtà incondizionata, obbligo emotivo e sacrificio. Queste sovrascrivono la natura contrattuale del rapporto di lavoro. In un contesto di ristrutturazione, il termine tenta di impedire ai dipendenti di far valere i propri diritti contrattuali inquadrando il ritiro delle cure come tradimento dei consanguinei.</p>
+          <p><strong>B — «La situazione è sotto controllo.»</strong><br>VELOCE: Un sollievo momentaneo che si dissolve quando si realizza che non è stata fornita alcuna informazione specifica.<br>LENTO: Asserzione senza agente. Nessun soggetto, nessuna specificazione di cosa significhi «sotto controllo», nessun orizzonte temporale. La grammatica produce rassicurazione mentre trasmette zero informazioni — sfruttando il principio cooperativo di Grice.</p>
+          <p><strong>C — «Troverà il modo.»</strong><br>VELOCE: Un lieve senso di oppressione — ti è stata appena assegnata la responsabilità di un problema che non hai creato.<br>LENTO: Ordine indiretto + de-responsabilizzazione. La frase ha la forma grammaticale di una previsione, la forza illocutoria di un ordine, e l'effetto strutturale di trasferire la responsabilità dal cliente (che ha creato il vincolo) al team (che deve assorbirlo).</p>
+        </div>
+      </div>
+      <div class="exercise-actions">
+        <button class="btn btn-check" onclick="verificaEsercizio('0-3-A')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8l4 4 8-8"/></svg>Verifica risposta</button>
+        <button class="btn btn-solution" onclick="mostraSoluzione('0-3-A')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M8 5v4M8 11v1"/></svg>Vedi risposta modello</button>
+        <button class="btn btn-download" onclick="scaricaEsercizio('0-3-A','Esercizio 0.3.A — Percezione Incarnata')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v8M5 7l3 3 3-3M3 12h10"/></svg>Scarica</button>
+        <span class="feedback-badge" id="fb-0-3-A"></span>
+        <button class="btn btn-clear" onclick="pulisciEsercizio('0-3-A')">Cancella</button>
+      </div>
+    </div>
+
+    <div class="tracking-sheet" id="tracking-0">
+      <h4>◆  Scheda di Tracking Learnable — Modulo 0</h4>
+      <p>Compila al termine di questo modulo. Torna a farlo 24 ore dopo e annota i cambiamenti.</p>
+      <div class="tracking-questions">
+        <div class="tracking-q"><label>Cosa vedo adesso che non vedevo prima?</label><textarea id="track-0-1" placeholder="La tua riflessione…"></textarea></div>
+        <div class="tracking-q"><label>Quali parole ora mi disturbano e prima non mi disturbavano?</label><textarea id="track-0-2" placeholder="Elencale…"></textarea></div>
+        <div class="tracking-q"><label>Quale domanda è diventata impossibile da porre in un contesto che riconosco?</label><textarea id="track-0-3" placeholder="Nomina la costruzione e la domanda impossibile…"></textarea></div>
+        <div class="tracking-q"><label>Cosa è cambiato nella mia percezione durante questo modulo?</label><textarea id="track-0-4" placeholder="Una o due frasi…"></textarea></div>
+      </div>
+      <div style="margin-top:14px"><button class="btn btn-download" onclick="scaricaTracking(0)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v8M5 7l3 3 3-3M3 12h10"/></svg>Scarica scheda di tracking</button></div>
+    </div>
+  </div>
+
+  <!-- MODULO 1 -->
+  <div id="page-mod1" class="page">
+    <div class="module-header">
+      <div class="module-eyebrow">Modulo 1</div>
+      <h2>Discontinuità Semiotiche</h2>
+      <p>Riconoscere la differenza empirica percepibile</p>
+    </div>
+    <p class="body-text">Un segno esiste come segno proprio perché è diverso da ciò che lo circonda. Prima di poter nominare un segno, devi essere in grado di notarlo — e il notare non è mai puramente cognitivo. In questo modulo lavorerai su tre registri: lo shock lessicale, l'attrito prosodicoformale e l'eloquenza dell'omissione.</p>
+
+    <div class="section-divider"><h3>1.1 — Neologismi e parole-shock</h3></div>
+    <div class="step-label"><span class="step-num">Passo 1</span><span class="step-title">Attivazione percettiva</span></div>
+    <div class="box box-perception">
+      <div class="box-label">🔴 Percezione</div>
+      La seguente parola è entrata nell'uso comune nel 2020. Leggila una volta. Non continuare.
+      <div style="text-align:center;margin:20px 0;font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:600;color:var(--deep);letter-spacing:.08em">LOCKDOWN</div>
+      Quali immagini ha evocato? Da quale dominio proveniva? A quale dominio è stata applicata?
+    </div>
+    <div class="step-label"><span class="step-num">Passo 2</span><span class="step-title">Disorientamento controllato</span></div>
+    <div class="box box-dissonance">
+      <div class="box-label">🟣 Disorientamento</div>
+      «Lockdown» proviene dal dominio delle carceri: uno stato di emergenza in cui i detenuti vengono confinati nelle celle dopo un incidente. La comunità ha scelto questa parola — invece di «restrizione», «quarantena», «contenimento» — per descrivere una misura di sanità pubblica applicata a un'intera popolazione libera. La scelta non era neutrale.
+    </div>
+    <div class="step-label"><span class="step-num">Passo 3</span><span class="step-title">Stabilizzazione concettuale</span></div>
+    <div class="box box-theory">
+      <div class="box-label">📘 Teoria — Il neologismo come discontinuità semiotica</div>
+      Un neologismo è una discontinuità semiotica: una parola che non esisteva nel lessico condiviso, o esisteva in un dominio diverso, e richiede alla comunità di costruire significato attorno ad essa. Il dominio semantico da cui la parola viene prelevata determina quali <strong>affordance</strong> — possibilità di azione, emozione e cognizione — vengono importate nel nuovo contesto.
+    </div>
+
+    <div class="exercise" id="ex-1-1-A">
+      <div class="exercise-id">Esercizio 1.1.A</div>
+      <div class="exercise-title">Mappare la migrazione (con il contributo di M.M. Faita)</div>
+      <div class="exercise-body">
+        Applica il micro-protocollo in cinque passi della Semantica Complementare ai seguenti termini. Per ciascuno: (a) affordance originarie; (b) affordance importate nel nuovo dominio; (c) affordance soppresse; (d) nuovo Learnable prodotto; (e) chi beneficia.
+        <table class="data-table" style="margin-top:12px">
+          <tr><th>Termine</th><th>Percorso di migrazione</th></tr>
+          <tr><td>«Resilienza»</td><td>Ingegneria → psicologia → management HR</td></tr>
+          <tr><td>«Lockdown»</td><td>Gestione carceraria → sanità pubblica → linguaggio comune</td></tr>
+          <tr><td>«DAD» (Didattica a Distanza)</td><td>Emergenza educativa → sostituto normalizzato dell'insegnamento</td></tr>
+          <tr><td>«Capitale umano»</td><td>Finanza → gestione delle persone in azienda</td></tr>
+        </table>
+      </div>
+      <div class="response-label">Analisi completa della migrazione — tutti e cinque i passi per termine:</div>
+      <textarea class="response-textarea" id="resp-1-1-A" placeholder="RESILIENZA&#10;(a) Affordance originarie: &#10;(b) Affordance importate: &#10;(c) Affordance soppresse: &#10;(d) Nuovo Learnable: &#10;(e) Chi beneficia: &#10;&#10;LOCKDOWN&#10;(a)…" style="min-height:300px" oninput="aggiornaContatore('1-1-A')"></textarea>
+      <div class="char-count" id="cc-1-1-A">0 caratteri</div>
+      <div class="solution-box" id="sol-1-1-A">
+        <div class="solution-header">✓ Risposta modello — Esercizio 1.1.A</div>
+        <div class="solution-text">
+          <p><strong>RESILIENZA</strong><br>(a) Originarie (ingegneria): capacità di un materiale di tornare alla sua forma originaria dopo la deformazione senza danni permanenti.<br>(b) Importate: capacità di assorbire forza senza cambiamento permanente; soglia misurabile; ritorno allo stato originale.<br>(c) Soppresse (Cono d'Ombra): il materiale non sente nulla — la persona sì. Il materiale non ricorda — la persona sì. Il «fallimento» del materiale è un problema tecnico; il «fallimento» della persona diventa un difetto del carattere.<br>(d) Nuovo Learnable: il dipendente è un materiale. La sua capacità psicologica è misurabile, migliorabile e oggetto di intervento manageriale. Se il materiale non è sufficientemente resiliente, è il materiale — non le condizioni — a richiedere modifica.<br>(e) Chi beneficia: management e organizzazioni che possono attribuire i fallimenti sotto pressione all'incapacità individuale piuttosto che alle condizioni che controllano. (Faita: «Mette al riparo chi produce o governa l'urto e rende impensabile la domanda sulle cause.»)</p>
+          <p><strong>DAD (Didattica a Distanza)</strong><br>(a) Didaktikós significa «ciò che è idoneo a produrre apprendimento» — porta l'efficacia come presupposto.<br>(b) Importate: la parola «didattica» garantisce che un apprendimento stia avvenendo, anche in assenza di verifica.<br>(c) Soppresse: la relazione pedagogica incarnata; la verifica effettiva dell'apprendimento; la responsabilità strutturale della scuola sulla qualità.<br>(d) Nuovo Learnable: la trasmissione digitale di contenuti equivale all'insegnamento. La domanda «si è insegnato davvero?» diventa impossibile.<br>(e) Chi beneficia: istituzioni scolastiche e politiche che devono presentare una soluzione di emergenza come pedagogicamente equivalente all'originale.</p>
+        </div>
+      </div>
+      <div class="exercise-actions">
+        <button class="btn btn-check" onclick="verificaEsercizio('1-1-A')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8l4 4 8-8"/></svg>Verifica risposta</button>
+        <button class="btn btn-solution" onclick="mostraSoluzione('1-1-A')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M8 5v4M8 11v1"/></svg>Vedi risposta modello</button>
+        <button class="btn btn-download" onclick="scaricaEsercizio('1-1-A','Esercizio 1.1.A — Mappare la Migrazione')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v8M5 7l3 3 3-3M3 12h10"/></svg>Scarica</button>
+        <span class="feedback-badge" id="fb-1-1-A"></span>
+        <button class="btn btn-clear" onclick="pulisciEsercizio('1-1-A')">Cancella</button>
+      </div>
+    </div>
+
+    <div class="step-label"><span class="step-num">Passo 6</span><span class="step-title">Cono d'Ombra</span></div>
+    <div class="box box-umbra">
+      <div class="box-label">■  Cono d'Ombra — Modulo 1.1</div>
+      Quando «forza lavoro resiliente» diventa il frame predefinito, queste domande diventano strutturalmente impossibili:
+      <ul style="margin:10px 0 0 18px;line-height:1.8"><li>Le condizioni che producono questa pressione sono accettabili?</li><li>Chi ha progettato queste condizioni e per quale scopo?</li><li>Cosa significherebbe ridurre la pressione anziché aumentare la tolleranza individuale?</li></ul>
+    </div>
+
+    <div class="exercise" id="ex-1-1-B">
+      <div class="exercise-id">Esercizio 1.1.B</div>
+      <div class="exercise-title">Produrre letture incompatibili</div>
+      <div class="exercise-body">
+        Prendi «Forza lavoro resiliente». Produci tre interpretazioni genuinamente incompatibili: dalla prospettiva di un CEO, di un lavoratore in prima linea, di uno psicologo. Non devono essere conciliabili. Poi identifica: quale interpretazione è favorita dalla naturalizzazione del termine? Quale domanda diventa impossibile una volta naturalizzato?
+      </div>
+      <div class="response-label">Tre letture incompatibili + analisi della naturalizzazione:</div>
+      <textarea class="response-textarea" id="resp-1-1-B" placeholder="Prospettiva CEO: &#10;&#10;Prospettiva lavoratore: &#10;&#10;Prospettiva psicologo: &#10;&#10;Quale interpretazione è favorita dalla naturalizzazione? &#10;Quale domanda diventa impossibile?" style="min-height:240px" oninput="aggiornaContatore('1-1-B')"></textarea>
+      <div class="char-count" id="cc-1-1-B">0 caratteri</div>
+      <div class="solution-box" id="sol-1-1-B">
+        <div class="solution-header">✓ Risposta modello — Esercizio 1.1.B</div>
+        <div class="solution-text">
+          <p><strong>CEO:</strong> «Forza lavoro resiliente» significa un team capace di mantenere la produttività attraverso disruption, riorganizzazioni e volatilità di mercato. È una capacità dell'asset. Il termine consente di investire in programmi di resilienza (formazione, supporto psicologico) inquadrando al contempo le decisioni strutturali (licenziamenti, aumento dei carichi) come sfide necessarie che la forza lavoro può assorbire.</p>
+          <p><strong>Lavoratore in prima linea:</strong> «Forza lavoro resiliente» significa dover sopportare condizioni oggettivamente difficili senza poterlo dire. Il termine pre-delegittima le lamentele: se stai soffrendo, ti manca la resilienza. Converte un problema strutturale (carico eccessivo) in una deficienza personale.</p>
+          <p><strong>Psicologo:</strong> «Forza lavoro resiliente» applica erroneamente una metafora ingegneristica. La resilienza psicologica non è una proprietà materiale stabile — è contestuale, relazionale e si esaurisce con l'attivazione ripetuta. La sua descrizione come capacità addestrabile e stabile è contraddetta dalla letteratura su stress cronico e burnout.</p>
+          <p><strong>Naturalizzazione:</strong> favorisce l'interpretazione del CEO — diventa il frame implicito per ogni discussione di policy.<br><strong>Domanda impossibile:</strong> «Le condizioni stesse sono accettabili?» Una volta naturalizzata «resilienza», questa domanda suona come una richiesta di trattamento speciale anziché come un'indagine strutturale legittima.</p>
+        </div>
+      </div>
+      <div class="exercise-actions">
+        <button class="btn btn-check" onclick="verificaEsercizio('1-1-B')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8l4 4 8-8"/></svg>Verifica risposta</button>
+        <button class="btn btn-solution" onclick="mostraSoluzione('1-1-B')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M8 5v4M8 11v1"/></svg>Vedi risposta modello</button>
+        <button class="btn btn-download" onclick="scaricaEsercizio('1-1-B','Esercizio 1.1.B — Letture Incompatibili')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v8M5 7l3 3 3-3M3 12h10"/></svg>Scarica</button>
+        <span class="feedback-badge" id="fb-1-1-B"></span>
+        <button class="btn btn-clear" onclick="pulisciEsercizio('1-1-B')">Cancella</button>
+      </div>
+    </div>
+
+    <div class="tracking-sheet" id="tracking-1">
+      <h4>◆  Scheda di Tracking Learnable — Modulo 1</h4>
+      <p>Compila al termine di questo modulo.</p>
+      <div class="tracking-questions">
+        <div class="tracking-q"><label>Cosa vedo adesso che non vedevo prima?</label><textarea id="track-1-1" placeholder="La tua riflessione…"></textarea></div>
+        <div class="tracking-q"><label>Quali parole ora mi disturbano?</label><textarea id="track-1-2" placeholder="Elencale…"></textarea></div>
+        <div class="tracking-q"><label>Quale domanda è diventata impossibile in un contesto che riconosco?</label><textarea id="track-1-3" placeholder="Nomina la costruzione e la domanda…"></textarea></div>
+      </div>
+      <div style="margin-top:14px"><button class="btn btn-download" onclick="scaricaTracking(1)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v8M5 7l3 3 3-3M3 12h10"/></svg>Scarica scheda</button></div>
+    </div>
+  </div>
+
+  <!-- MODULO 2 -->
+  <div id="page-mod2" class="page">
+    <div class="module-header">
+      <div class="module-eyebrow">Modulo 2</div>
+      <h2>Discontinuità Lessicali</h2>
+      <p>Parole che cambiano o allargano il dominio rappresentato</p>
+    </div>
+    <p class="body-text">Ogni parola porta con sé una storia d'uso. Quella storia determina quali azioni, emozioni e cognizioni la parola rende disponibili — le sue affordance. Quando una parola migra da un dominio all'altro, porta con sé la sua storia.</p>
+
+    <div class="section-divider"><h3>2.2 — Verbalizzazione e nominalizzazione</h3></div>
+    <div class="step-label"><span class="step-num">Passo 1</span><span class="step-title">Attivazione percettiva</span></div>
+    <div class="box box-perception">
+      <div class="box-label">🔴 Percezione</div>
+      Confronta queste due frasi. Leggile ad alta voce. Nota la differenza prima di nominarla.
+      <div class="quote-text">A: «Il Consiglio di Amministrazione ha deciso di tagliare 400 posti di lavoro.»</div>
+      <div class="quote-text">B: «Un programma di razionalizzazione della forza lavoro verrà implementato.»</div>
+    </div>
+    <div class="box box-theory">
+      <div class="box-label">📘 Teoria — Nominalizzazione</div>
+      La <strong>nominalizzazione</strong> trasforma un verbo (tagliare, decidere) in un sostantivo (il taglio, la decisione). L'agente viene cancellato. L'azione viene solidificata in una cosa. Le cose non possono essere ritenute responsabili. Non si può discutere con una cosa. La nominalizzazione è il meccanismo grammaticale della de-agentivizzazione istituzionale.
+    </div>
+
+    <div class="exercise" id="ex-2-2-A">
+      <div class="exercise-id">Esercizio 2.2.A</div>
+      <div class="exercise-title">Restituire gli agenti cancellati</div>
+      <div class="exercise-body">
+        Il seguente paragrafo proviene da un comunicato di ristrutturazione aziendale. Riscrivilo in forma attiva completa, nominando ogni agente. Poi rispondi: quale riscrittura è più pericolosa da pubblicare, e perché?
+        <div class="quote-text">«L'implementazione di un'iniziativa di ottimizzazione dei costi ha portato all'identificazione di sinergie che richiederanno una razionalizzazione degli organici in diverse unità di business. Il processo di transizione verrà gestito con cura e verrà offerto il supporto adeguato ai dipendenti coinvolti.»</div>
+      </div>
+      <div class="response-label">Riscrittura attiva completa con tutti gli agenti nominati:</div>
+      <textarea class="response-textarea" id="resp-2-2-A" placeholder="Riscrittura attiva:&#10;&#10;Quale riscrittura è più pericolosa da pubblicare, e perché?" style="min-height:180px" oninput="aggiornaContatore('2-2-A')"></textarea>
+      <div class="char-count" id="cc-2-2-A">0 caratteri</div>
+      <div class="solution-box" id="sol-2-2-A">
+        <div class="solution-header">✓ Risposta modello — Esercizio 2.2.A</div>
+        <div class="solution-text">
+          <p><strong>Riscrittura attiva:</strong> «Il Consiglio di Amministrazione ha deciso di ridurre i costi. Il management ha identificato che sarebbe possibile eliminare posizioni in diverse unità di business. Il dipartimento HR e i manager comunicheranno i licenziamenti ai dipendenti interessati e forniranno supporto durante la transizione.»</p>
+          <p><strong>Perché la versione attiva è più pericolosa da pubblicare:</strong> crea una catena di responsabilità precisa. Il CdA può essere interrogato sul perché di questa decisione. Il management può essere interrogato su come ha identificato quali ruoli tagliare. L'HR può essere interrogato su cosa significa «supporto adeguato» in pratica. Ogni agente crea un punto di responsabilità — e quindi un punto di potenziale contestazione, negoziazione o responsabilità legale.</p>
+          <p>La versione nominalizzata («l'implementazione di un'iniziativa di ottimizzazione dei costi ha portato a…») presenta i licenziamenti come conseguenza automatica di un processo precedente, senza che alcun decisore umano sia visibile in nessuna fase. Il passivo in «verrà gestito» e «verrà offerto» impedisce che si cristallizzi qualsiasi responsabilità specifica.</p>
+        </div>
+      </div>
+      <div class="exercise-actions">
+        <button class="btn btn-check" onclick="verificaEsercizio('2-2-A')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8l4 4 8-8"/></svg>Verifica risposta</button>
+        <button class="btn btn-solution" onclick="mostraSoluzione('2-2-A')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M8 5v4M8 11v1"/></svg>Vedi risposta modello</button>
+        <button class="btn btn-download" onclick="scaricaEsercizio('2-2-A','Esercizio 2.2.A — Restituire gli Agenti')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v8M5 7l3 3 3-3M3 12h10"/></svg>Scarica</button>
+        <span class="feedback-badge" id="fb-2-2-A"></span>
+        <button class="btn btn-clear" onclick="pulisciEsercizio('2-2-A')">Cancella</button>
+      </div>
+    </div>
+
+    <div class="box box-drill" style="margin-top:20px">
+      <div class="box-label">⚡ Drill rapido — 90 secondi</div>
+      «La decisione è stata presa.» — Nomina cinque persone che potrebbero essere il decisore. Poi nomina quella che il passivo protegge di più. Fallo prima di avere il tempo di essere diplomatico.
+    </div>
+
+    <div class="section-divider"><h3>2.5 — Cross-over linguistici</h3></div>
+    <div class="box box-theory">
+      <div class="box-label">📘 Concetto chiave — Cross-over linguistico (Magni, 2025)</div>
+      Una stessa parola usata in due domini con significati diversi, dove il secondo uso occupa il campo del primo, immunizzando il parlante dalle obiezioni provenienti da quel campo. Quando «scienza» viene usata politicamente («la scienza dice…») per chiudere un dibattito, lo scienziato che cerca di correggere l'affermazione politica viene accusato di fare politica. Il cross-over è completo.
+    </div>
+
+    <div class="exercise" id="ex-2-5-A">
+      <div class="exercise-id">Esercizio 2.5.A</div>
+      <div class="exercise-title">Identificare il cross-over</div>
+      <div class="exercise-body">
+        Per ciascun termine: produci due letture incompatibili — dominio tecnico e dominio politico/mediatico. Poi identifica: quali obiezioni il cross-over neutralizza?
+        <table class="data-table" style="margin-top:12px">
+          <tr><th>Termine</th><th>Contesto del cross-over</th></tr>
+          <tr><td>«Vaccino»</td><td>Definizione scientifica vs. uso politico nel dibattito sull'obbligo</td></tr>
+          <tr><td>«Dazi»</td><td>Analisi economica vs. narrativa della sovranità nazionale</td></tr>
+          <tr><td>«Naturale»</td><td>Valutazione tossicologica vs. marketing/wellness</td></tr>
+          <tr><td>«Scienza»</td><td>Metodo ipotetico vs. chiusura autoritativa del dibattito</td></tr>
+        </table>
+      </div>
+      <div class="response-label">Due letture incompatibili per termine + obiezioni neutralizzate:</div>
+      <textarea class="response-textarea" id="resp-2-5-A" placeholder="VACCINO&#10;Lettura tecnica: &#10;Lettura politica: &#10;Obiezioni neutralizzate: &#10;&#10;DAZI&#10;Lettura economica: &#10;Lettura politica: &#10;Obiezioni neutralizzate: &#10;&#10;…" style="min-height:280px" oninput="aggiornaContatore('2-5-A')"></textarea>
+      <div class="char-count" id="cc-2-5-A">0 caratteri</div>
+      <div class="solution-box" id="sol-2-5-A">
+        <div class="solution-header">✓ Risposta modello — Esercizio 2.5.A</div>
+        <div class="solution-text">
+          <p><strong>VACCINO</strong><br>Tecnica: preparazione biologica che induce immunità esponendo il sistema immunitario a un antigene; efficacia misurata come riduzione della probabilità di infezione o malattia grave.<br>Politica: un intervento governativo che «funziona» o «non funziona» in modo binario assoluto; luogo di conflitto ideologico su autorità statale e autonomia corporea.<br>Obiezioni neutralizzate: una volta che il significato politico sostituisce quello tecnico, gli argomenti statistici sulla riduzione del rischio relativo diventano irrilevanti — il dibattito non è più sulla farmacologia ma sulla libertà.</p>
+          <p><strong>DAZI</strong><br>Economica: imposta doganale su beni importati/esportati; strumento di politica commerciale con effetti misurabili su prezzi, surplus del consumatore, ritorsioni commerciali, catene di fornitura globali.<br>Politica: strumento di sovranità nazionale e protezione dell'industria locale; separato dal campo dell'analisi economica internazionale.<br>Obiezioni neutralizzate: qualsiasi economista che citi gli effetti negativi dei dazi (aumento dei prezzi per i consumatori, ritorsioni commerciali, perdita di efficienza allocativa) viene neutralizzato come portavoce di interessi «globalisti» anziché come esperto di economia internazionale.</p>
+        </div>
+      </div>
+      <div class="exercise-actions">
+        <button class="btn btn-check" onclick="verificaEsercizio('2-5-A')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8l4 4 8-8"/></svg>Verifica risposta</button>
+        <button class="btn btn-solution" onclick="mostraSoluzione('2-5-A')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M8 5v4M8 11v1"/></svg>Vedi risposta modello</button>
+        <button class="btn btn-download" onclick="scaricaEsercizio('2-5-A','Esercizio 2.5.A — Cross-over Linguistici')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v8M5 7l3 3 3-3M3 12h10"/></svg>Scarica</button>
+        <span class="feedback-badge" id="fb-2-5-A"></span>
+        <button class="btn btn-clear" onclick="pulisciEsercizio('2-5-A')">Cancella</button>
+      </div>
+    </div>
+
+    <div class="tracking-sheet" id="tracking-2">
+      <h4>◆  Scheda di Tracking Learnable — Modulo 2</h4>
+      <p>Compila al termine di questo modulo.</p>
+      <div class="tracking-questions">
+        <div class="tracking-q"><label>Cosa vedo adesso che non vedevo prima?</label><textarea id="track-2-1" placeholder="La tua riflessione…"></textarea></div>
+        <div class="tracking-q"><label>Quali parole ora mi disturbano?</label><textarea id="track-2-2" placeholder="Elencale…"></textarea></div>
+        <div class="tracking-q"><label>Quale domanda è diventata impossibile da porre perché ho riconosciuto una costruzione?</label><textarea id="track-2-3" placeholder="Nominala…"></textarea></div>
+      </div>
+      <div style="margin-top:14px"><button class="btn btn-download" onclick="scaricaTracking(2)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v8M5 7l3 3 3-3M3 12h10"/></svg>Scarica scheda</button></div>
+    </div>
+  </div>
+
+  <!-- MODULO 3 -->
+  <div id="page-mod3" class="page">
+    <div class="module-header">
+      <div class="module-eyebrow">Modulo 3</div>
+      <h2>Gli Esorcismi Linguistici</h2>
+      <p>La grammatica della contraddizione come costruzione di nuovi Learnables</p>
+    </div>
+
+    <div class="step-label"><span class="step-num">Passo 1</span><span class="step-title">Attivazione percettiva</span></div>
+    <div class="box box-perception">
+      <div class="box-label">🔴 Percezione</div>
+      Quattro frasi. Leggile come se le sentissi pronunciare con sincera convinzione per la prima volta.
+      <div class="quote-text">«Droghe ricreative.» &nbsp; «Volontariato obbligatorio.» &nbsp; «Distanziamento sociale.» &nbsp; «Democrazia illiberale.»</div>
+      Quale produce l'attrito più forte? Descrivilo fisicamente, non analiticamente.
+    </div>
+    <div class="step-label"><span class="step-num">Passo 2</span><span class="step-title">Disorientamento controllato</span></div>
+    <div class="box box-dissonance">
+      <div class="box-label">🟣 Disorientamento</div>
+      Ciascuna di queste costruzioni è logicamente autocontraddittoria. La contraddizione non è stata risolta. È stata produttiva. Ciascuna ha generato una nuova categoria di politica, una pratica culturale o un quadro giuridico. <strong>Resta in questa constatazione.</strong>
+    </div>
+    <div class="box box-theory">
+      <div class="box-label">📘 Teoria — Esorcismo linguistico (Alharbi, Magni, Marchetti, 2024)</div>
+      Un <strong>esorcismo linguistico</strong> è una costruzione grammaticale in cui un aggettivo tratto da un dominio semantico incompatibile con quello del suo sostantivo viene applicato a esso, generando un nuovo campo cognitivo attraverso la collisione produttiva dei due domini. La comunità che adotta l'esorcismo non risolve la contraddizione: la installa come nuovo Learnable.<br><br>Tre fasi: (1) <em>Discontinuità</em> — sorpresa cognitiva; (2) <em>Negoziazione</em> — la comunità costruisce una risoluzione; (3) <em>Naturalizzazione</em> — l'esorcismo diventa invisibile.
+    </div>
+
+    <div class="exercise" id="ex-3-1-A">
+      <div class="exercise-id">Esercizio 3.1.A</div>
+      <div class="exercise-title">Analisi strutturale completa degli esorcismi</div>
+      <div class="exercise-body">
+        Applica il protocollo in cinque passi + Cono d'Ombra + implicazione di governance (Passo 7b) a ciascun esorcismo:
+        <table class="data-table" style="margin-top:12px">
+          <tr><th>Esorcismo</th><th>Dominio di origine</th></tr>
+          <tr><td>«Distanziamento SOCIALE»</td><td>Covid-19, 2020</td></tr>
+          <tr><td>«Intelligenza ARTIFICIALE»</td><td>Informatica e scienze cognitive</td></tr>
+          <tr><td>«Risorse UMANE»</td><td>Management HR</td></tr>
+          <tr><td>«Austerità ESPANSIVA»</td><td>Politica macroeconomica, 2010–2015</td></tr>
+          <tr><td>«Volontariato OBBLIGATORIO»</td><td>Welfare/educazione</td></tr>
+        </table>
+        <br>Per ciascuno: (a) dominio del sostantivo; (b) dominio dell'aggettivo; (c) collisione; (d) nuovo Learnable; (e) chi beneficia; (f) Cono d'Ombra; (g) Passo 7a — alternativa linguistica; (h) Passo 7b — alternativa di governance.
+      </div>
+      <div class="response-label">Analisi completa — 8 elementi per esorcismo:</div>
+      <textarea class="response-textarea" id="resp-3-1-A" placeholder="DISTANZIAMENTO SOCIALE&#10;(a) Dominio del sostantivo: &#10;(b) Dominio dell'aggettivo: &#10;(c) Collisione: &#10;(d) Nuovo Learnable: &#10;(e) Chi beneficia: &#10;(f) Cono d'Ombra: &#10;(g) Passo 7a: &#10;(h) Passo 7b: &#10;&#10;INTELLIGENZA ARTIFICIALE&#10;…" style="min-height:380px" oninput="aggiornaContatore('3-1-A')"></textarea>
+      <div class="char-count" id="cc-3-1-A">0 caratteri</div>
+      <div class="solution-box" id="sol-3-1-A">
+        <div class="solution-header">✓ Risposta modello — Esercizio 3.1.A (protocollo completo su «Intelligenza Artificiale»)</div>
+        <div class="solution-text">
+          <p><strong>INTELLIGENZA ARTIFICIALE</strong></p>
+          <p>(a) Dominio del sostantivo: «intelligenza» — psicologia cognitiva, filosofia della mente. Affordance: comprensione, giudizio, coscienza, intenzionalità, sensibilità contestuale, errore creativo, empatia.</p>
+          <p>(b) Dominio dell'aggettivo: «artificiale» — ingegneria, produzione. Affordance: costruito, deterministico, controllabile, riproducibile, privo di spontaneità, imitativo del naturale.</p>
+          <p>(c) Collisione: «intelligenza» presuppone un soggetto vivente con esperienza interna; «artificiale» segnala l'assenza di vita. Entrambe le risoluzioni — l'intelligenza è riducibile al calcolo (meno di quanto pensavamo) o le macchine sono capaci di comprensione (più di quanto pensavamo) — servono gli interessi del settore tecnologico.</p>
+          <p>(d) Nuovo Learnable: i sistemi computazionali vengono presentati come dotati di proprietà cognitive tipicamente umane. Il termine rende difficile chiedere se «capiscano» davvero.</p>
+          <p>(e) Chi beneficia: l'industria tecnologica (investimenti, minore scrutinio regolatorio, implementazione prematura). Chi perde voce: scienziati cognitivi, etici, lavoratori sostituiti dall'automazione.</p>
+          <p>(f) Cono d'Ombra: «Capisce davvero?» diventa ingenuo. «Chi è responsabile quando sbaglia?» diventa tecnicamente complesso. «Quali capacità umane sta sostituendo?» diventa economicamente inopportuno.</p>
+          <p>(g) Passo 7a: «Sistemi avanzati di previsione statistica», «Strumenti automatizzati di supporto alle decisioni», «Motori di corrispondenza di pattern addestrati su dati storici».</p>
+          <p>(h) Passo 7b: obbligo di disclosure dei dati di addestramento, tassi di errore e catene di responsabilità prima dell'implementazione; standard educativi per la literacy statistica come competenza civica; regole di appalto pubblico con soglie obbligatorie di supervisione umana.</p>
+          <p><strong>DISTANZIAMENTO SOCIALE (sintesi)</strong><br>Dominio «distanziamento»: separazione, assenza, impoverimento relazionale. Dominio «sociale»: prossimità, scambio, solidarietà. Collisione: i due termini istruiscono movimenti opposti. Nuovo Learnable: la distanza fisica viene reinterpretata come forma responsabile di connessione sociale — chi non si distanzia fisicamente è antisociale. Cono d'Ombra: i costi psicologici e sociali dell'isolamento vengono oscurati dalla narrativa positiva del termine. Passo 7a: «distanziamento fisico» (proposta OMS). Passo 7b: framework comunicativi che distinguano esplicitamente distanza fisica (necessaria) da connessione sociale (da preservare e amplificare).</p>
+        </div>
+      </div>
+      <div class="exercise-actions">
+        <button class="btn btn-check" onclick="verificaEsercizio('3-1-A')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8l4 4 8-8"/></svg>Verifica risposta</button>
+        <button class="btn btn-solution" onclick="mostraSoluzione('3-1-A')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M8 5v4M8 11v1"/></svg>Vedi risposta modello</button>
+        <button class="btn btn-download" onclick="scaricaEsercizio('3-1-A','Esercizio 3.1.A — Esorcismi Linguistici')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v8M5 7l3 3 3-3M3 12h10"/></svg>Scarica</button>
+        <span class="feedback-badge" id="fb-3-1-A"></span>
+        <button class="btn btn-clear" onclick="pulisciEsercizio('3-1-A')">Cancella</button>
+      </div>
+    </div>
+
+    <div class="tracking-sheet" id="tracking-3">
+      <h4>◆  Scheda di Tracking Learnable — Modulo 3</h4>
+      <p>Compila al termine di questo modulo.</p>
+      <div class="tracking-questions">
+        <div class="tracking-q"><label>Quale esorcismo ti ha disturbato di più, e perché?</label><textarea id="track-3-1" placeholder="La tua riflessione…"></textarea></div>
+        <div class="tracking-q"><label>Nomina un esorcismo che smetterai di usare, e l'alternativa di governance.</label><textarea id="track-3-2" placeholder="Esorcismo → Alternativa → Governance…"></textarea></div>
+      </div>
+      <div style="margin-top:14px"><button class="btn btn-download" onclick="scaricaTracking(3)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v8M5 7l3 3 3-3M3 12h10"/></svg>Scarica scheda</button></div>
+    </div>
+  </div>
+
+  <!-- MODULO 4 -->
+  <div id="page-mod4" class="page">
+    <div class="module-header">
+      <div class="module-eyebrow">Modulo 4</div>
+      <h2>Discontinuità Grammaticali e Sintattiche</h2>
+      <p>Come la struttura della frase costruisce realtà cognitive invisibili</p>
+    </div>
+    <p class="body-text">La grammatica non è il contenitore del significato. È un produttore di significato. La scelta tra attivo e passivo, tra indicativo e condizionale, tra soggetto-primo e complemento-primo — ciascuna è una scelta su chi esiste, chi agisce, chi è responsabile, e cosa è reale.</p>
+
+    <div class="step-label"><span class="step-num">Passo 1</span><span class="step-title">Attivazione percettiva</span></div>
+    <div class="box box-perception">
+      <div class="box-label">🔴 Percezione — pausa di 10 secondi</div>
+      <div class="quote-text">«Sono stati commessi degli errori.»</div>
+      Chi ha commesso gli errori? Cosa ti impedisce di saperlo? Come ti senti riguardo al non sapere?
+    </div>
+    <div class="box box-theory">
+      <div class="box-label">📘 Teoria — Diatesi passiva come cancellazione dell'agente</div>
+      Il passivo senza agente non è una scelta stilistica. È un'operazione cognitiva: la cancellazione dell'agente rende l'attribuzione di responsabilità strutturalmente impossibile senza informazioni aggiuntive. La domanda «chi?» diventa strutturalmente difficile — non perché sia vietata, ma perché la grammatica l'ha pre-svuotata.
+    </div>
+
+    <div class="exercise" id="ex-4-1-A">
+      <div class="exercise-id">Esercizio 4.1.A</div>
+      <div class="exercise-title">Restituire l'agente cancellato</div>
+      <div class="exercise-body">
+        Riscrivi ciascun passivo in forma attiva completa. Nomina l'agente più probabile. Spiega cosa cambia cognitivamente quando l'agente viene restituito.
+        <div class="quote-text">1. «Sono stati adottati provvedimenti urgenti per fronteggiare la situazione.»</div>
+        <div class="quote-text">2. «I dati personali verranno trattati in conformità alle normative vigenti.»</div>
+        <div class="quote-text">3. «Si è ritenuto che la proposta non meritasse ulteriore considerazione.»</div>
+        <div class="quote-text">4. «Nell'ambito della ristrutturazione, 200 posizioni non saranno rinnovate.»</div>
+        <div class="quote-text">5. «Sono stati commessi degli errori.»</div>
+      </div>
+      <div class="response-label">Riscrittura attiva / agente più probabile / cambiamento cognitivo:</div>
+      <textarea class="response-textarea" id="resp-4-1-A" placeholder="1. Riscrittura: &#10;   Agente più probabile: &#10;   Cambiamento cognitivo: &#10;&#10;2. Riscrittura: &#10;…" style="min-height:280px" oninput="aggiornaContatore('4-1-A')"></textarea>
+      <div class="char-count" id="cc-4-1-A">0 caratteri</div>
+      <div class="solution-box" id="sol-4-1-A">
+        <div class="solution-header">✓ Risposta modello — Esercizio 4.1.A</div>
+        <div class="solution-text">
+          <p><strong>1.</strong> Attiva: «Il Governo / il Consiglio dei Ministri ha adottato provvedimenti urgenti.» Agente: il ministro responsabile. Cambiamento: crea un punto di responsabilità — «perché quel ministro ha fatto quella scelta?» diventa la domanda di follow-up naturale.</p>
+          <p><strong>2.</strong> Attiva: «[Nome azienda] tratterà i tuoi dati personali in conformità alle normative.» Agente: il titolare del trattamento. Cambiamento: l'azienda diventa visibile come attore, non come processore passivo, il che modifica la dinamica di potere del consenso.</p>
+          <p><strong>3.</strong> Attiva: «[Il comitato / il CdA / il responsabile HR] ha ritenuto che la proposta non meritasse ulteriore considerazione.» Cambiamento: la valutazione può essere contestata, impugnata o rivista — nel passivo, il rifiuto ha la qualità di una constatazione oggettiva piuttosto che di un giudizio umano.</p>
+          <p><strong>5.</strong> Attiva: «Ho commesso degli errori.» oppure «Ho preso le decisioni che hanno portato a questi risultati.» Cambiamento: questa è la forma grammaticale della responsabilità. Ogni versione attiva crea una struttura di accountability diversa. Il passivo non ne crea nessuna. <em>È questa la ragione per cui «sono stati commessi degli errori» è diventata famigerata: è la frase che riconosce un risultato negativo rifiutando di assumersene la paternità.</em></p>
+        </div>
+      </div>
+      <div class="exercise-actions">
+        <button class="btn btn-check" onclick="verificaEsercizio('4-1-A')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8l4 4 8-8"/></svg>Verifica risposta</button>
+        <button class="btn btn-solution" onclick="mostraSoluzione('4-1-A')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M8 5v4M8 11v1"/></svg>Vedi risposta modello</button>
+        <button class="btn btn-download" onclick="scaricaEsercizio('4-1-A','Esercizio 4.1.A — Restituire gli Agenti')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v8M5 7l3 3 3-3M3 12h10"/></svg>Scarica</button>
+        <span class="feedback-badge" id="fb-4-1-A"></span>
+        <button class="btn btn-clear" onclick="pulisciEsercizio('4-1-A')">Cancella</button>
+      </div>
+    </div>
+
+    <div class="tracking-sheet" id="tracking-4">
+      <h4>◆  Scheda di Tracking Learnable — Modulo 4</h4>
+      <p>Compila al termine di questo modulo.</p>
+      <div class="tracking-questions">
+        <div class="tracking-q"><label>Quanti passivi senza agente hai incontrato questa settimana?</label><textarea id="track-4-1" placeholder="Elenca fino a tre esempi da comunicazioni reali…"></textarea></div>
+        <div class="tracking-q"><label>Cosa è diventato visibile del linguaggio istituzionale che prima non lo era?</label><textarea id="track-4-2" placeholder="La tua riflessione…"></textarea></div>
+      </div>
+      <div style="margin-top:14px"><button class="btn btn-download" onclick="scaricaTracking(4)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v8M5 7l3 3 3-3M3 12h10"/></svg>Scarica scheda</button></div>
+    </div>
+  </div>
+
+  <!-- MODULO 5 -->
+  <div id="page-mod5" class="page">
+    <div class="module-header">
+      <div class="module-eyebrow">Modulo 5</div>
+      <h2>Discontinuità Pragmatiche</h2>
+      <p>Il significato che dipende dal contesto</p>
+    </div>
+    <p class="body-text">Stesse parole, realtà diversa. La stessa frase può essere un ordine o un invito, una minaccia o una rassicurazione. La discontinuità pragmatica è il divario tra ciò che una frase dice e ciò che fa.</p>
+
+    <div class="step-label"><span class="step-num">Passo 1</span><span class="step-title">Attivazione percettiva</span></div>
+    <div class="box box-perception">
+      <div class="box-label">🔴 Percezione</div>
+      Il tuo manager ti manda questa email: <em>«Sono sicuro che troverà il modo di rispettare la scadenza.»</em> È venerdì pomeriggio. La scadenza è lunedì.
+    </div>
+    <div class="box box-body">
+      <div class="box-label">🧠 Prompt corporeo</div>
+      Ciò che il tuo corpo ha sentito non era il contenuto letterale della «fiducia». Ha sentito l'ordine indiretto, la valutazione implicita, e la negazione preventiva di qualsiasi giustificazione. Questi sono tre atti linguistici diversi in un'unica frase.
+    </div>
+    <div class="box box-theory">
+      <div class="box-label">📘 Teoria — Forza illocutoria (Austin, 1962; Searle, 1969)</div>
+      Un enunciato non solo dice qualcosa (atto locutorio) ma <em>fa</em> qualcosa (atto illocutorio): promette, ordina, chiede, avverte. La discontinuità pragmatica emerge quando la forza illocutoria reale diverge dalla forma grammaticale apparente.
+    </div>
+
+    <div class="exercise" id="ex-5-1-A">
+      <div class="exercise-id">Esercizio 5.1.A</div>
+      <div class="exercise-title">Decomporre l'atto linguistico indiretto</div>
+      <div class="exercise-body">
+        Per ciascuno: (a) forma grammaticale; (b) forza illocutoria; (c) le tre cose che fa simultaneamente; (d) perché la forma indiretta è più potente di un equivalente diretto.
+        <div class="quote-text">1. «Sono sicuro che troverà il modo di rispettare la scadenza.» (manager al team)</div>
+        <div class="quote-text">2. «Mi chiedo se questo sia il momento opportuno per sollevare la questione.» (riunione di board)</div>
+        <div class="quote-text">3. «Ci fidiamo completamente del suo giudizio.» (detto prima di togliergli l'autorità)</div>
+        <div class="quote-text">4. «Non sono qui per dirti come fare il tuo lavoro, ma —»</div>
+      </div>
+      <div class="response-label">Forma / forza / tre atti simultanei / perché l'indiretto è più potente:</div>
+      <textarea class="response-textarea" id="resp-5-1-A" placeholder="1. (a) Forma: &#10;   (b) Forza: &#10;   (c) Tre atti: &#10;   (d) Perché l'indiretto è più potente: &#10;&#10;2. (a) Forma: &#10;…" style="min-height:300px" oninput="aggiornaContatore('5-1-A')"></textarea>
+      <div class="char-count" id="cc-5-1-A">0 caratteri</div>
+      <div class="solution-box" id="sol-5-1-A">
+        <div class="solution-header">✓ Risposta modello — Esercizio 5.1.A</div>
+        <div class="solution-text">
+          <p><strong>1. «Sono sicuro che troverà il modo di rispettare la scadenza.»</strong><br>(a) Forma: dichiarativa / espressione di fiducia.<br>(b) Forza: ordine indiretto + minaccia implicita.<br>(c) Tre atti: (i) ordina (la scadenza deve essere rispettata); (ii) nega preventivamente qualsiasi giustificazione (ho già espresso fiducia, quindi se fallisce ha tradito la mia fiducia); (iii) valuta negativamente il team (la certezza espressa segnala un dubbio sottostante reale).<br>(d) Perché indiretto: il team non può rispondere a ciò che non è stato detto. Non può negoziare la scadenza (non è stata proposta, è stata assunta). Non può rispondere all'accusa implicita (non è stata formulata). Si trova in un debito comunicativo senza meccanismo visibile per ripagarlo.</p>
+          <p><strong>4. «Non sono qui per dirti come fare il tuo lavoro, ma —»</strong><br>(a) Forma: negazione di intenzione.<br>(b) Forza: la parola «ma» cancella semanticamente la negazione — il parlante è precisamente lì per dirti come fare il tuo lavoro.<br>(c) Tre atti: (i) crea una finzione di rispetto per l'autonomia; (ii) emette un'istruzione o una critica; (iii) fornisce negabilità («Ho detto che non stavo per dirtelo»).<br>(d) Perché indiretto: il destinatario non può contestare l'istruzione senza contestare l'intenzione dichiarata, il che apparirebbe paranoico o ostile.</p>
+        </div>
+      </div>
+      <div class="exercise-actions">
+        <button class="btn btn-check" onclick="verificaEsercizio('5-1-A')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8l4 4 8-8"/></svg>Verifica risposta</button>
+        <button class="btn btn-solution" onclick="mostraSoluzione('5-1-A')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M8 5v4M8 11v1"/></svg>Vedi risposta modello</button>
+        <button class="btn btn-download" onclick="scaricaEsercizio('5-1-A','Esercizio 5.1.A — Forza Illocutoria')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v8M5 7l3 3 3-3M3 12h10"/></svg>Scarica</button>
+        <span class="feedback-badge" id="fb-5-1-A"></span>
+        <button class="btn btn-clear" onclick="pulisciEsercizio('5-1-A')">Cancella</button>
+      </div>
+    </div>
+
+    <div class="tracking-sheet" id="tracking-5">
+      <h4>◆  Scheda di Tracking Learnable — Modulo 5</h4>
+      <p>Compila al termine di questo modulo.</p>
+      <div class="tracking-questions">
+        <div class="tracking-q"><label>Quale atto linguistico indiretto incontri più spesso nel tuo contesto?</label><textarea id="track-5-1" placeholder="Nominalo, citalo, decodificalo…"></textarea></div>
+        <div class="tracking-q"><label>Cosa è diventato chiedibile che prima non lo era?</label><textarea id="track-5-2" placeholder="La tua riflessione…"></textarea></div>
+      </div>
+      <div style="margin-top:14px"><button class="btn btn-download" onclick="scaricaTracking(5)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v8M5 7l3 3 3-3M3 12h10"/></svg>Scarica scheda</button></div>
+    </div>
+  </div>
+
+  <!-- MODULO 6 -->
+  <div id="page-mod6" class="page">
+    <div class="module-header">
+      <div class="module-eyebrow">Modulo 6</div>
+      <h2>Semantica Complementare</h2>
+      <p>Il metodo operativo completo</p>
+    </div>
+    <p class="body-text">Hai lavorato attraverso percezione, lessico, grammatica e pragmatica. Questo modulo assembla tutti gli strumenti nel protocollo completo di Semantica Complementare a 9 passi.</p>
+
+    <div class="box box-theory">
+      <div class="box-label">📘 Il Protocollo a 9 Passi (Magni, Marchetti, Alharbi, 2024)</div>
+      <table class="data-table" style="margin-top:10px">
+        <tr><th>Passo</th><th>Operazione</th></tr>
+        <tr><td>1. Identificazione</td><td>Nomina la costruzione. Quali elementi sono in tensione semantica?</td></tr>
+        <tr><td>2. Dominio A</td><td>Mappa le affordance del sostantivo nel suo dominio originario.</td></tr>
+        <tr><td>3. Dominio B</td><td>Mappa le affordance dell'aggettivo nel suo dominio originario.</td></tr>
+        <tr><td>4. Collisione</td><td>Dove si scontrano i domini? Quali affordance sono incompatibili?</td></tr>
+        <tr><td>5. Nuovo Learnable</td><td>Quale nuova realtà cognitiva è stata costruita?</td></tr>
+        <tr><td>6. Valutazione critica</td><td>Chi produce questa costruzione? Chi beneficia? Chi perde voce?</td></tr>
+        <tr><td>Cono d'Ombra</td><td>Quale domanda è diventata impossibile da porre?</td></tr>
+        <tr><td>7a. Alternativa linguistica</td><td>Proponi una formulazione senza il paradosso.</td></tr>
+        <tr><td>7b. Alternativa strutturale</td><td>Quale assetto di governance rende questo esorcismo non necessario?</td></tr>
+      </table>
+    </div>
+
+    <div class="exercise" id="ex-6-1-A">
+      <div class="exercise-id">Esercizio 6.1.A</div>
+      <div class="exercise-title">Protocollo completo a 9 passi — caso pilota: «Distanziamento Sociale»</div>
+      <div class="exercise-body">
+        Applica tutti e nove i passi all'esorcismo «Distanziamento Sociale». Contesto: il termine emerge nel marzo 2020 durante la pandemia Covid-19. L'OMS raccomanda successivamente «distanziamento fisico», ma il primo esorcismo è già naturalizzato. Dedica almeno 6–8 righe a ciascun passo.
+      </div>
+      <div class="response-label">Analisi completa a 9 passi — etichetta chiaramente ciascun passo:</div>
+      <textarea class="response-textarea" id="resp-6-1-A" placeholder="PASSO 1 — Identificazione:&#10;&#10;PASSO 2 — Dominio A (distanziamento):&#10;&#10;PASSO 3 — Dominio B (sociale):&#10;&#10;PASSO 4 — Collisione:&#10;&#10;PASSO 5 — Nuovo Learnable:&#10;&#10;PASSO 6 — Valutazione critica:&#10;&#10;CONO D'OMBRA:&#10;&#10;PASSO 7a — Alternativa linguistica:&#10;&#10;PASSO 7b — Alternativa di governance:" style="min-height:500px" oninput="aggiornaContatore('6-1-A')"></textarea>
+      <div class="char-count" id="cc-6-1-A">0 caratteri</div>
+      <div class="solution-box" id="sol-6-1-A">
+        <div class="solution-header">✓ Risposta modello — Esercizio 6.1.A (protocollo completo)</div>
+        <div class="solution-text">
+          <p><strong>Passo 1 — Identificazione:</strong> Sostantivo: «distanziamento» (processo di allontanamento). Modificatore: «sociale» (relativo alle relazioni tra persone). Appartengono a domini semantici che normalmente descrivono movimenti opposti.</p>
+          <p><strong>Passo 2 — Dominio A («distanziamento»):</strong> Separazione fisica o emotiva. In sociologia: riduzione dei legami sociali, alienazione, isolamento. Affordance: separazione, assenza, impoverimento relazionale, solitudine.</p>
+          <p><strong>Passo 3 — Dominio B («sociale»):</strong> Relativo alla comunità, all'interazione, alla copresenza. Affordance: prossimità, scambio, solidarietà, appartenenza, riconoscimento reciproco.</p>
+          <p><strong>Passo 4 — Collisione:</strong> I due termini istruiscono movimenti opposti — avvicinarsi (sociale) e allontanarsi (distanziamento). La collisione produce uno shock cognitivo che richiede alla comunità di costruire una nuova interpretazione: «distanziarsi fisicamente è un atto di cura sociale».</p>
+          <p><strong>Passo 5 — Nuovo Learnable:</strong> La distanza fisica viene reinterpretata come forma responsabile di connessione sociale. Il paradosso viene risolto moralizzando il distanziamento: diventa non una perdita di vita sociale ma un'espressione di virtù sociale. Chi non si distanzia fisicamente viene inquadrato come antisociale.</p>
+          <p><strong>Passo 6 — Valutazione critica:</strong> Prodotto dall'OMS e dalla comunicazione di sanità pubblica globale. Benefici: mobilita l'adesione emotiva alle misure di distanziamento attraverso un frame sociale positivo. Costi: oscura il danno psicologico e sociale dell'isolamento presentandolo come socialmente virtuoso. Crea stigma per la non-compliance che va oltre la preoccupazione epidemiologica.</p>
+          <p><strong>Cono d'Ombra:</strong> Diventa strutturalmente difficile chiedere: «Quali sono i costi sociali di questa misura?» Una volta che il «distanziamento» è «sociale», i costi sociali del distanziamento diventano invisibili — sono contenuti nel termine stesso che descrive l'azione come socialmente buona.</p>
+          <p><strong>Passo 7a:</strong> «Distanziamento fisico» (il termine correttivo dell'OMS stessa). Guadagno: precisione; separazione del requisito fisico dal dominio sociale. Costo comunicativo: meno emotivamente mobilitante; il frame moralmente convincente viene perso.</p>
+          <p><strong>Passo 7b:</strong> Framework di comunicazione pubblica che distinguano esplicitamente distanza fisica (necessaria) da connessione sociale (da preservare attivamente e compensare); progettazione di policy che includa misure attive di supporto sociale accanto ai requisiti di restrizione fisica; metriche di valutazione che misurino i costi sociali e psicologici, non solo i risultati epidemiologici.</p>
+        </div>
+      </div>
+      <div class="exercise-actions">
+        <button class="btn btn-check" onclick="verificaEsercizio('6-1-A')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8l4 4 8-8"/></svg>Verifica risposta</button>
+        <button class="btn btn-solution" onclick="mostraSoluzione('6-1-A')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M8 5v4M8 11v1"/></svg>Vedi risposta modello</button>
+        <button class="btn btn-download" onclick="scaricaEsercizio('6-1-A','Esercizio 6.1.A — Protocollo Completo Distanziamento Sociale')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v8M5 7l3 3 3-3M3 12h10"/></svg>Scarica</button>
+        <span class="feedback-badge" id="fb-6-1-A"></span>
+        <button class="btn btn-clear" onclick="pulisciEsercizio('6-1-A')">Cancella</button>
+      </div>
+    </div>
+
+    <div class="tracking-sheet" id="tracking-6">
+      <h4>◆  Scheda di Tracking Learnable — Modulo 6</h4>
+      <p>Compila al termine di questo modulo.</p>
+      <div class="tracking-questions">
+        <div class="tracking-q"><label>Quale passo del protocollo è per te il più difficile, e perché?</label><textarea id="track-6-1" placeholder="La tua riflessione…"></textarea></div>
+        <div class="tracking-q"><label>Applica il protocollo a un esorcismo che incontri questa settimana.</label><textarea id="track-6-2" placeholder="Esorcismo: &#10;Risultato chiave: &#10;Cono d'Ombra:…"></textarea></div>
+      </div>
+      <div style="margin-top:14px"><button class="btn btn-download" onclick="scaricaTracking(6)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v8M5 7l3 3 3-3M3 12h10"/></svg>Scarica scheda</button></div>
+    </div>
+  </div>
+
+  <!-- MODULO 7 -->
+  <div id="page-mod7" class="page">
+    <div class="module-header">
+      <div class="module-eyebrow">Modulo 7</div>
+      <h2>Leadership Generativa dei Significati</h2>
+      <p>Dall'analista all'architetto del significato</p>
+    </div>
+
+    <div class="step-label"><span class="step-num">Passo 1</span><span class="step-title">Attivazione percettiva</span></div>
+    <div class="box box-perception">
+      <div class="box-label">🔴 Percezione</div>
+      Pensa a una parola o frase attualmente in uso nella tua organizzazione che hai sempre accettato senza questioni. Ora applica la domanda fondamentale del Cono d'Ombra: <strong>quale domanda questa frase ha reso impossibile da porre?</strong>
+    </div>
+    <div class="box box-theory">
+      <div class="box-label">📘 Leadership Generativa dei Significati (Magni, Marchetti, Alharbi, 2025)</div>
+      La capacità di progettare consapevolmente le strutture simboliche attraverso cui un'organizzazione percepisce la propria realtà, prende decisioni e agisce. Non è spin comunicativo: è la costruzione deliberata di un ambiente linguistico in cui certe cognizioni diventano più probabili, certe domande più naturali, e certe identità più disponibili alle persone all'interno del sistema.<br><br>Una costruzione è <strong>generativa</strong> quando espande ciò che può essere pensato, chiesto e fatto. È <strong>manipolativa</strong> quando lo contrae.
+    </div>
+    <div class="step-label"><span class="step-num">Passo 2</span><span class="step-title">Disorientamento controllato</span></div>
+    <div class="box box-dissonance">
+      <div class="box-label">🟣 La tensione che devi tenere</div>
+      Hai trascorso tutto questo eserciziario imparando a rilevare e smontare costruzioni linguistiche che installano Learnables senza consenso. Ora ti viene chiesto di progettare costruzioni linguistiche. C'è una contraddizione? Non risolverla troppo in fretta.
+    </div>
+
+    <div class="exercise" id="ex-7-1-A">
+      <div class="exercise-id">Esercizio 7.1.A</div>
+      <div class="exercise-title">Generativo vs. manipolativo</div>
+      <div class="exercise-body">
+        Classifica ciascuna delle seguenti riprogettazioni linguistiche come <strong>generativa</strong> o <strong>manipolativa</strong>. Spiega il criterio usato.
+        <div class="quote-text">1. Sostituire «risorse umane» con «i nostri colleghi» in tutte le comunicazioni interne.</div>
+        <div class="quote-text">2. Sostituire «sono stati commessi degli errori» con «ho commesso un errore, ed ecco cosa farò diversamente».</div>
+        <div class="quote-text">3. Sostituire «il mercato richiede flessibilità» con «abbiamo deciso di modificare i termini contrattuali».</div>
+        <div class="quote-text">4. Sostituire «siamo una famiglia» con «siamo un team con obiettivi condivisi e confini chiari».</div>
+        <div class="quote-text">5. Un CEO che dice «Questo è stato un trimestre difficile e ne sono responsabile» dopo un risultato negativo.</div>
+      </div>
+      <div class="response-label">Generativo o manipolativo + criterio usato per ciascuno:</div>
+      <textarea class="response-textarea" id="resp-7-1-A" placeholder="1. Classificazione: &#10;   Criterio: &#10;&#10;2. Classificazione: &#10;   Criterio: &#10;&#10;3. Classificazione: &#10;   Criterio: &#10;&#10;4. Classificazione: &#10;   Criterio: &#10;&#10;5. Classificazione: &#10;   Criterio: " style="min-height:280px" oninput="aggiornaContatore('7-1-A')"></textarea>
+      <div class="char-count" id="cc-7-1-A">0 caratteri</div>
+      <div class="solution-box" id="sol-7-1-A">
+        <div class="solution-header">✓ Risposta modello — Esercizio 7.1.A</div>
+        <div class="solution-text">
+          <p>Il criterio che distingue generativo da manipolativo non è l'intenzione del parlante ma l'<strong>effetto strutturale sullo spazio cognitivo del destinatario</strong>. Una costruzione generativa espande ciò che può essere pensato, chiesto e fatto. Una manipolativa lo contrae.</p>
+          <p><strong>1. «Risorse umane» → «i nostri colleghi»</strong><br><em>Generativa — SE accompagnata da cambiamento di governance.</em> Il nuovo termine rende strutturalmente imbarazzante la domanda «un collega può essere dispiegato?» in modo in cui «una risorsa può essere dispiegata?» non lo è. Crea spazio cognitivo per argomenti basati sulla dignità. Condizione: generativa solo se accompagnata dal Passo 7b.</p>
+          <p><strong>2. «Sono stati commessi degli errori» → «Ho commesso un errore, ed ecco cosa farò diversamente.»</strong><br><em>Generativa — senza ambiguità.</em> Crea una struttura di responsabilità dove non ne esisteva. Rende la domanda «cosa farà diversamente?» naturale da porre. Modella un'identità — chi si assume la responsabilità — che gli altri possono emulare.</p>
+          <p><strong>3. «Il mercato richiede flessibilità» → «Abbiamo deciso di modificare i termini contrattuali.»</strong><br><em>Generativa</em> — rimuove la de-responsabilizzazione che attribuisce una decisione umana alla necessità di mercato. Rende la decisione visibile, contestabile, negoziabile. Nota: è anche la riscrittura «più pericolosa» — precisamente perché è onesta.</p>
+          <p><strong>4. «Siamo una famiglia» → «Siamo un team con obiettivi condivisi e confini chiari.»</strong><br><em>Generativa</em> — rende pensabili il rifiuto, la negoziazione e la definizione dei limiti senza il peso cognitivo della dislealtà.</p>
+          <p><strong>5. CEO: «Ne sono responsabile.»</strong><br><em>Generativa</em> — il singolo atto linguistico generativo più potente disponibile a un leader. Crea responsabilità, modella identità e segnala che il linguaggio della responsabilità nell'organizzazione non è decorativo.</p>
+        </div>
+      </div>
+      <div class="exercise-actions">
+        <button class="btn btn-check" onclick="verificaEsercizio('7-1-A')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8l4 4 8-8"/></svg>Verifica risposta</button>
+        <button class="btn btn-solution" onclick="mostraSoluzione('7-1-A')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M8 5v4M8 11v1"/></svg>Vedi risposta modello</button>
+        <button class="btn btn-download" onclick="scaricaEsercizio('7-1-A','Esercizio 7.1.A — Generativo vs Manipolativo')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v8M5 7l3 3 3-3M3 12h10"/></svg>Scarica</button>
+        <span class="feedback-badge" id="fb-7-1-A"></span>
+        <button class="btn btn-clear" onclick="pulisciEsercizio('7-1-A')">Cancella</button>
+      </div>
+    </div>
+
+    <div class="section-divider"><h3>7.4 — Il tuo programma generativo</h3></div>
+    <div class="exercise" id="ex-7-4-B">
+      <div class="exercise-id">Esercizio 7.4.B</div>
+      <div class="exercise-title">Il tuo programma generativo a 90 giorni</div>
+      <div class="exercise-body">
+        Progetta un programma di riprogettazione linguistica a 90 giorni per il tuo contesto professionale. Includi: (1) tre esorcismi che abbandonerai con alternative di governance; (2) tre domande che renderai possibili e che attualmente non lo sono; (3) tre indicatori di tracking; (4) una resistenza sistemica e la tua strategia per affrontarla.
+      </div>
+      <div class="response-label">Il tuo programma generativo a 90 giorni:</div>
+      <textarea class="response-textarea" id="resp-7-4-B" placeholder="TRE ESORCISMI CHE ABBANDONO:&#10;1. Esorcismo: → Alternativa: → Governance:&#10;2. …&#10;3. …&#10;&#10;TRE DOMANDE CHE RENDERÒ POSSIBILI:&#10;1. &#10;2. &#10;3. &#10;&#10;TRE INDICATORI DI TRACKING:&#10;1. &#10;2. &#10;3. &#10;&#10;UNA RESISTENZA SISTEMICA + MIA STRATEGIA:&#10;" style="min-height:320px" oninput="aggiornaContatore('7-4-B')"></textarea>
+      <div class="char-count" id="cc-7-4-B">0 caratteri</div>
+      <div class="solution-box" id="sol-7-4-B">
+        <div class="solution-header">✓ Risposta modello — Esercizio 7.4.B (programma esemplare per un'organizzazione sanitaria)</div>
+        <div class="solution-text">
+          <p>Questo esercizio è personale per progetto. Un programma esemplare per un'organizzazione sanitaria italiana:</p>
+          <p><strong>Tre esorcismi abbandonati:</strong><br>1. «Risorse umane» → «Sviluppo persone e organizzazione» → Governance: ristrutturare la funzione HR attorno all'abilitazione delle condizioni per lo sviluppo professionale, non solo compliance e headcount.<br>2. «Formazione obbligatoria» → «Sviluppo con tempo protetto» → Governance: la formazione è programmata come tempo protetto, non aggiunta ai carichi esistenti; i manager sono responsabili di abilitare la partecipazione.<br>3. «Sono stati commessi degli errori» (post-incidente) → «Abbiamo preso una decisione che ha portato a questo risultato — ecco cosa cambieremo» → Governance: i processi post-incidente richiedono responsabili nominati e impegni correttivi specifici.</p>
+          <p><strong>Tre domande rese possibili:</strong><br>1. «Quali condizioni hanno portato a questo errore?» (prima bloccata dal frame della «responsabilità individuale»)<br>2. «Cosa dovremmo cambiare strutturalmente perché non si ripeta?» (prima bloccata dal frame della «resilienza»)<br>3. «Chi ha deciso questo, e con quale autorità?» (prima bloccata dal passivo senza agente sistematico)</p>
+          <p><strong>Tre indicatori:</strong><br>1. Numero di report post-incidente che nominano un responsabile della decisione (vs. costruzioni passive): target 80% in 90 giorni.<br>2. Numero di riunioni di team in cui viene posta la domanda «quali condizioni hanno portato a questo?»: tracking qualitativo, revisione trimestrale.<br>3. Partecipazione volontaria alla formazione vs. presenza obbligatoria: se il cambio di frame funziona, la partecipazione volontaria dovrebbe aumentare.</p>
+          <p><strong>Una resistenza sistemica:</strong> La funzione legale obieterà che nominare responsabili nei report post-incidente crea esposizione legale. Strategia: coinvolgere la funzione legale come partner di progettazione nel creare formati di report che distinguano «responsabilità per le condizioni» (sistemica) da «colpa per l'errore individuale» (personale), anziché usare il passivo senza agente come blunt instrument per evitare la responsabilità.</p>
+        </div>
+      </div>
+      <div class="exercise-actions">
+        <button class="btn btn-check" onclick="verificaEsercizio('7-4-B')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8l4 4 8-8"/></svg>Verifica risposta</button>
+        <button class="btn btn-solution" onclick="mostraSoluzione('7-4-B')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M8 5v4M8 11v1"/></svg>Vedi risposta modello</button>
+        <button class="btn btn-download" onclick="scaricaEsercizio('7-4-B','Esercizio 7.4.B — Programma Generativo 90 Giorni')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v8M5 7l3 3 3-3M3 12h10"/></svg>Scarica</button>
+        <span class="feedback-badge" id="fb-7-4-B"></span>
+        <button class="btn btn-clear" onclick="pulisciEsercizio('7-4-B')">Cancella</button>
+      </div>
+    </div>
+
+    <div class="tracking-sheet" id="tracking-7">
+      <h4>◆  Scheda di Tracking Learnable — Modulo 7 (Finale)</h4>
+      <p>Questa è la scheda finale. Prenditi il tempo che merita.</p>
+      <div class="tracking-questions">
+        <div class="tracking-q"><label>Quale costruzione di questo eserciziario ha cambiato la tua percezione in modo più permanente?</label><textarea id="track-7-1" placeholder="Nominala e spiega perché…"></textarea></div>
+        <div class="tracking-q"><label>Quale domanda puoi porre adesso che non potevi porre prima di iniziare?</label><textarea id="track-7-2" placeholder="La domanda e il contesto in cui la porrai…"></textarea></div>
+        <div class="tracking-q"><label>Quale linguaggio progetterai o abbandonerai nei prossimi 30 giorni?</label><textarea id="track-7-3" placeholder="Un impegno specifico…"></textarea></div>
+        <div class="tracking-q"><label>Qual è la differenza tra l'analista che eri prima del Modulo 0 e quello che sei adesso?</label><textarea id="track-7-4" placeholder="La tua riflessione finale…"></textarea></div>
+      </div>
+      <div style="margin-top:14px"><button class="btn btn-download" onclick="scaricaTracking(7)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v8M5 7l3 3 3-3M3 12h10"/></svg>Scarica scheda finale</button></div>
+    </div>
+  </div>
+
+  <!-- GLOSSARIO -->
+  <div id="page-glossario" class="page">
+    <div class="module-header">
+      <div class="module-eyebrow">Riferimento</div>
+      <h2>Glossario Tecnico</h2>
+      <p>Termini chiave della Linguistica del Learnable</p>
+    </div>
+    <table class="data-table">
+      <tr><th>Termine</th><th>Definizione tecnica</th></tr>
+      <tr><td><strong>Discontinuità empirica percepibile</strong></td><td>Qualsiasi elemento linguistico che emerge come figura disturbante sul proprio sfondo atteso, innescando processi di costruzione di nuovo significato.</td></tr>
+      <tr><td><strong>Affordance</strong></td><td>L'insieme di possibilità di azione e percezione che una parola evoca, sulla base del dominio semantico a cui appartiene. (Gibson, 1977)</td></tr>
+      <tr><td><strong>Dominio semantico</strong></td><td>Il campo di significati, relazioni e oggetti entro cui una parola opera e da cui trae le sue principali affordance.</td></tr>
+      <tr><td><strong>Esorcismo linguistico</strong></td><td>Costruzione grammaticale in cui un aggettivo di dominio semantico incompatibile viene applicato a un sostantivo, producendo un nuovo Learnable attraverso la collisione produttiva. (Alharbi, Magni, Marchetti, 2024)</td></tr>
+      <tr><td><strong>Semantica Complementare</strong></td><td>Metodo analitico a 9 passi che mappa i domini semantici in tensione, identifica il Learnable prodotto e propone alternative linguistiche e di governance.</td></tr>
+      <tr><td><strong>Cono d'Ombra</strong></td><td>La zona di ombra cognitiva prodotta da una costruzione: ciò che non può essere pensato, chiesto o visto dall'interno del suo frame.</td></tr>
+      <tr><td><strong>Nominalizzazione</strong></td><td>Trasformazione di un verbo in sostantivo; cancella l'agente e de-agentivizza l'azione.</td></tr>
+      <tr><td><strong>Diatesi passiva (senza agente)</strong></td><td>Forma grammaticale della cancellazione della responsabilità.</td></tr>
+      <tr><td><strong>Forza illocutoria</strong></td><td>Ciò che un atto linguistico fa (ordina, minaccia, promette) indipendentemente da ciò che dice. (Austin, 1962)</td></tr>
+      <tr><td><strong>Implicatura conversazionale</strong></td><td>Significato trasmesso senza essere detto esplicitamente, inferito attraverso le massime cooperative. (Grice, 1975)</td></tr>
+      <tr><td><strong>Naturalizzazione</strong></td><td>Processo per cui una discontinuità cessa di essere percepita e diventa lessico ordinario invisibile.</td></tr>
+      <tr><td><strong>Parola-ombrello / Parola di plastica</strong></td><td>Termine così espanso da coprire realtà incompatibili, rendendo il dissenso strutturalmente difficile. (Pörksen, 1988)</td></tr>
+      <tr><td><strong>Cross-over linguistico</strong></td><td>La stessa parola usata in due domini, dove il secondo uso occupa il campo del primo, immunizzando il parlante dalle sue obiezioni. (Magni, 2025)</td></tr>
+      <tr><td><strong>Leadership Generativa dei Significati</strong></td><td>La capacità di progettare consapevolmente le strutture simboliche attraverso cui un'organizzazione percepisce, decide e agisce — distinta dalla manipolazione per la sua espansione strutturale dello spazio cognitivo. (Magni et al., 2025)</td></tr>
+    </table>
+    <div class="sources" style="margin-top:40px">
+      <strong>Riferimenti principali</strong>
+      <ul>
+        <li>Magni, L., Marchetti, G., Alharbi, A. (2023). <em>Learnable Theory &amp; Analysis.</em> Luiss University Press, Roma.</li>
+        <li>Magni, L., Marchetti, G., Alharbi, A. (2024). <em>Learnable Linguistics for Business Leaders.</em> Youcanprint, Lecce.</li>
+        <li>Magni, L., Marchetti, G., Alharbi, A. (2025). <em>Generative Leadership of Meanings.</em> Youcanprint, Lecce.</li>
+        <li>Austin, J.L. (1962). <em>How to Do Things with Words.</em> Oxford: Clarendon Press.</li>
+        <li>Grice, H.P. (1975). Logic and Conversation. In: Cole &amp; Morgan (eds.), <em>Syntax and Semantics</em>, Vol. 3, pp. 41–58.</li>
+        <li>Gibson, J.J. (1977). The Theory of Affordances. In: Shaw &amp; Bransford (eds.), <em>Perceiving, Acting, and Knowing.</em></li>
+        <li>Pörksen, U. (1988). <em>Plastikwörter.</em> Stuttgart: Klett-Cotta. [Engl.: <em>Plastic Words.</em> Penn State Press, 1995]</li>
+        <li>Varela, F., Thompson, E., Rosch, E. (1991). <em>The Embodied Mind.</em> MIT Press.</li>
+        <li>Bourdieu, P. (1991). <em>Language and Symbolic Power.</em> Cambridge: Polity Press.</li>
+        <li>Maturana, H. &amp; Varela, F. (1980). <em>Autopoiesis and Cognition.</em> Dordrecht: Reidel.</li>
+      </ul>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+const stato = { paginaCorrente:'home', esercizi:{}, completati:0 };
+const ESERCIZI = ['0-1-A','0-2-A','0-3-A','1-1-A','1-1-B','2-2-A','2-5-A','3-1-A','4-1-A','5-1-A','6-1-A','7-1-A','7-4-B'];
+const NOMI_MODULI = {0:'Allenare la Percezione',1:'Discontinuità Semiotiche',2:'Discontinuità Lessicali',3:'Esorcismi Linguistici',4:'Grammatica e Sintassi',5:'Discontinuità Pragmatiche',6:'Semantica Complementare',7:'Leadership Generativa'};
+const TITOLI = {home:'Il Linguaggio che Incanta',mod0:'Modulo 0 — Allenare la Percezione',mod1:'Modulo 1 — Discontinuità Semiotiche',mod2:'Modulo 2 — Discontinuità Lessicali',mod3:'Modulo 3 — Esorcismi Linguistici',mod4:'Modulo 4 — Grammatica e Sintassi',mod5:'Modulo 5 — Discontinuità Pragmatiche',mod6:'Modulo 6 — Semantica Complementare',mod7:'Modulo 7 — Leadership Generativa',glossario:'Glossario Tecnico'};
+const PAROLE_CHIAVE = {'0-1-A':['attrito','dominio','parola','fluida','strana'],'0-2-A':['frase','disturba','dissonanza','attrito'],'0-3-A':['famiglia','controllo','veloce','lento','corpo','meccanismo'],'1-1-A':['affordance','dominio','soppresse','learnable','beneficia'],'1-1-B':['CEO','lavoratore','psicologo','naturaliz','impossibile'],'2-2-A':['attivo','agente','CdA','deciso','pericolosa'],'2-5-A':['tecnica','politica','cross','neutraliz','dominio'],'3-1-A':['sostantivo','aggettivo','collisione','learnable','ombra','governance'],'4-1-A':['attiva','agente','CdA','cognitivo','responsabilit'],'5-1-A':['forma','forza','indiretto','potente','atto'],'6-1-A':['passo','dominio','collisione','learnable','ombra','governance','alternativa'],'7-1-A':['generativ','manipolativ','criterio','espande','contrae'],'7-4-B':['esorcismo','governance','domanda','resistenza','tracking']};
+
+function mostraPagina(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const p = document.getElementById('page-'+id);
+  if(p) p.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>{if(n.getAttribute('onclick')&&n.getAttribute('onclick').includes(`'${id}'`))n.classList.add('active');});
+  document.getElementById('topbar-title').textContent = TITOLI[id]||'Il Linguaggio che Incanta';
+  stato.paginaCorrente = id;
+  window.scrollTo({top:0,behavior:'smooth'});
+  chiudiSidebar();
+}
+
+function toggleSidebar(){const sb=document.getElementById('sidebar'),ov=document.getElementById('overlay');sb.classList.toggle('open');ov.classList.toggle('visible');}
+function chiudiSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('visible');}
+
+function aggiornaContatore(id){
+  const ta=document.getElementById('resp-'+id),cc=document.getElementById('cc-'+id);
+  if(ta&&cc)cc.textContent=ta.value.length+' caratteri';
+}
+
+function verificaEsercizio(id){
+  const ta=document.getElementById('resp-'+id),fb=document.getElementById('fb-'+id);
+  if(!ta||!fb)return;
+  const val=ta.value.trim();
+  fb.className='feedback-badge visible';
+  if(val.length===0){fb.className='feedback-badge visible empty';fb.textContent='⚠ Nessuna risposta';ta.classList.remove('correct','reviewed');return;}
+  const parole=val.split(/\s+/).length;
+  if(parole<20){fb.className='feedback-badge visible partial';fb.textContent='◎ Risposta troppo breve';ta.classList.add('reviewed');ta.classList.remove('correct');return;}
+  const chiavi=PAROLE_CHIAVE[id]||[];
+  const valMin=val.toLowerCase();
+  const corrispondenze=chiavi.filter(k=>valMin.includes(k));
+  const rapporto=chiavi.length?corrispondenze.length/chiavi.length:1;
+  if(rapporto>=0.6&&parole>=40){fb.className='feedback-badge visible good';fb.textContent='✓ Buona profondità analitica';ta.classList.add('correct');ta.classList.remove('reviewed');segnaCompletato(id);}
+  else if(rapporto>=0.3||parole>=25){fb.className='feedback-badge visible partial';fb.textContent='◎ Parziale — consulta la risposta modello';ta.classList.add('reviewed');ta.classList.remove('correct');}
+  else{fb.className='feedback-badge visible partial';fb.textContent='◎ Approfondisci — usa la risposta modello';ta.classList.add('reviewed');ta.classList.remove('correct');}
+}
+
+function segnaCompletato(id){
+  if(!stato.esercizi[id]){stato.esercizi[id]=true;stato.completati++;aggiornaProgresso();
+    const modNum=id.split('-')[0];
+    const nav=document.querySelector(`.nav-item[onclick*="mod${modNum}"]`);
+    if(nav){let b=nav.querySelector('.nav-badge');if(!b){b=document.createElement('span');b.className='nav-badge done';nav.appendChild(b);}b.textContent='✓';b.className='nav-badge done';}}
+}
+
+function aggiornaProgresso(){
+  const totale=ESERCIZI.length,fatto=stato.completati;
+  document.getElementById('progress-text').textContent=`${fatto} / ${totale} esercizi`;
+  document.getElementById('progress-fill').style.width=`${(fatto/totale)*100}%`;
+}
+
+function mostraSoluzione(id){const s=document.getElementById('sol-'+id);if(s)s.classList.toggle('visible');}
+
+function pulisciEsercizio(id){
+  const ta=document.getElementById('resp-'+id),fb=document.getElementById('fb-'+id),sol=document.getElementById('sol-'+id);
+  if(ta){ta.value='';ta.classList.remove('correct','reviewed');aggiornaContatore(id);}
+  if(fb)fb.className='feedback-badge';
+  if(sol)sol.classList.remove('visible');
+}
+
+function scaricaEsercizio(id,titolo){
+  const resp=document.getElementById('resp-'+id),sol=document.getElementById('sol-'+id);
+  if(!resp)return;
+  const risposta=resp.value.trim()||'(Nessuna risposta fornita)';
+  const modello=sol?sol.querySelector('.solution-text')?.textContent?.trim()||'':'';
+  const contenuto=[
+    'IL LINGUAGGIO CHE INCANTA — Eserciziario Interattivo',
+    '━'.repeat(60),`Esercizio: ${titolo}`,
+    `Data: ${new Date().toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'})}`,
+    '','─── LA MIA RISPOSTA ─────────────────────────────────────','',risposta,
+    '','─── RISPOSTA MODELLO ────────────────────────────────────','',modello||'(Risposta modello non ancora visualizzata)',
+    '','━'.repeat(60),'Learnable Theory — Magni, Marchetti, Alharbi (2024/2025)','Luiss Business School — Open Research Books — Giugno 2026',
+  ].join('\n');
+  const blob=new Blob([contenuto],{type:'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=titolo.replace(/[^a-zA-Z0-9\s]/g,'').replace(/\s+/g,'_')+'.txt';a.click();URL.revokeObjectURL(url);
+}
+
+function scaricaTracking(numMod){
+  const etichette=['Cosa vedo adesso che non vedevo prima?','Quali parole ora mi disturbano?','Quale domanda è diventata impossibile?','Cosa è cambiato nella mia percezione?'];
+  const righe=['IL LINGUAGGIO CHE INCANTA — Scheda di Tracking Learnable','━'.repeat(60),`Modulo ${numMod}: ${NOMI_MODULI[numMod]||''}`,`Data: ${new Date().toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'})}`,''  ];
+  for(let i=1;i<=4;i++){const ta=document.getElementById(`track-${numMod}-${i}`);righe.push(`${i}. ${etichette[i-1]||'Domanda '+i}`);righe.push(ta&&ta.value.trim()?ta.value.trim():'(non risposto)');righe.push('');}
+  righe.push('━'.repeat(60),'Torna a questa scheda 24 ore dopo aver completato il modulo.');
+  const blob=new Blob([righe.join('\n')],{type:'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;
+  a.download=`Tracking_Modulo_${numMod}_${(NOMI_MODULI[numMod]||'').replace(/\s/g,'_')}.txt`;a.click();URL.revokeObjectURL(url);
+}
+
+aggiornaProgresso();
+ESERCIZI.forEach(id=>aggiornaContatore(id));
+</script>
+</body>
+</html>
